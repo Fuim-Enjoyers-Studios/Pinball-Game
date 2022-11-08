@@ -57,6 +57,13 @@ public:
 
 		return frames[actualFrame];
 	}
+	int GetCurrentFrameint() const
+	{
+		return (int)currentFrame;
+	}
+	void SetCurrentFrame(int frame) {
+		currentFrame = frame;
+	}
 };
 
 #endif

@@ -33,12 +33,15 @@ public:
 	// The scene sprite sheet loaded into an SDL_Texture
 	SDL_Texture* menuTexture = nullptr;
 	SDL_Texture* menuTextureAnim = nullptr;
+	SDL_Texture* iconTexture = nullptr;
 	Animation* currentMenuAnim;
 	Animation menu;
 	Animation icon;
 
 	int iconCounter = 240;
 	bool appStart = true;
+	bool transitionanim;
+	bool playOrExit;
 };
 
 #endif

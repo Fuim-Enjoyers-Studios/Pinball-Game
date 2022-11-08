@@ -6,6 +6,7 @@
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
 #include "ModuleFadeToBlack.h"
+#include "ModuleSceneIntro.h"
 
 SceneMenu::SceneMenu(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -30,7 +31,7 @@ bool SceneMenu::Start()
 	menu.PushBack({ 0,1887,800,800 });
 	menu.PushBack({ 1100,1887,800,800 });
 	menu.speed = 0.2f;
-	
+	menu.loop = false;
 
 	App->renderer->camera.x = 0;
 	App->renderer->camera.y = 0;
@@ -41,8 +42,6 @@ bool SceneMenu::Start()
 
 	transitionanim = false;
 	playOrExit = true;
-
-
 
 	return true;
 }
@@ -64,9 +63,6 @@ update_status SceneMenu::Update()
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) {
 		playOrExit = false;
 	}
-
-	
-	
 	
 	if (transitionanim == true) {
 		currentMenuAnim = &menu;
@@ -74,7 +70,7 @@ update_status SceneMenu::Update()
 		SDL_Rect rect = currentMenuAnim->GetCurrentFrame();
 		App->renderer->Blit(menuTextureAnim, 0, 0, &rect);
 		if (menu.GetCurrentFrameint() == 7) {
-			this->Disable(); 
+			App->fade->FadeToBlack(this, (Module*)App->scene_intro, 60);
 		}
 		
 	}

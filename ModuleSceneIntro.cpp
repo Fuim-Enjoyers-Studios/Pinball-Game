@@ -31,7 +31,7 @@ bool ModuleSceneIntro::Start()
 	rick = App->textures->Load("Assets/Textures/rick_head.png");
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 
-	//
+	//LOADS FONTS
 	char lookupTable[] = { "! @,_./0123456789$;< ?abcdefghijklmnopqrstuvwxyz" };
 	scoreFont = App->fonts->Load("Assets/Fonts/rtype_font.png", lookupTable, 1);
 

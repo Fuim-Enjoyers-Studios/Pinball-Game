@@ -39,6 +39,7 @@ bool SceneMenu::Start()
 	menuTexture = App->textures->Load("Assets/Textures/menu.png");
 	menuTextureAnim = App->textures->Load("Assets/Textures/menu spritesheet.png");
 	iconTexture = App->textures->Load("Assets/Textures/lightsaber.png");
+	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
 
 	transitionanim = false;
 	playOrExit = true;
@@ -124,6 +125,9 @@ update_status SceneMenu::Update()
 		App->renderer->Blit(iconTexture, 152, 615);
 	}
 
+	SDL_ShowCursor(false);
+	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
+
 	return update_status::UPDATE_CONTINUE;
 }
 
@@ -133,6 +137,8 @@ bool SceneMenu::CleanUp()
 
 	App->textures->Unload(menuTexture);
 	App->textures->Unload(menuTextureAnim);
+	App->textures->Unload(iconTexture);
+	App->textures->Unload(cursorTexture);
 
 	return true;
 }

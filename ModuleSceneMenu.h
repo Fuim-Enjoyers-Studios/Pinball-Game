@@ -11,7 +11,7 @@ class SceneMenu : public Module
 {
 public:
 	//Constructor
-	SceneMenu();
+	SceneMenu(Application* app, bool start_enabled = true);
 
 	//Destructor
 	~SceneMenu();
@@ -21,7 +21,7 @@ public:
 
 	// Called at the middle of the application loop
 	// Updates the scene's background animations
-	bool Update(float dt);
+	update_status Update();
 
 	// Called at the end of the application loop.
 	// Performs the render call of all the parts of the scene's background
@@ -32,6 +32,8 @@ public:
 public:
 	// The scene sprite sheet loaded into an SDL_Texture
 	SDL_Texture* menuTexture = nullptr;
+	SDL_Texture* menuTextureAnim = nullptr;
+	Animation* currentMenuAnim;
 	Animation menu;
 	Animation icon;
 

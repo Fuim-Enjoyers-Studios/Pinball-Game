@@ -1,6 +1,14 @@
 #include "ModuleSceneMenu.h"
 
 #include "Application.h"
+#include "ModuleRender.h"
+#include "ModuleTextures.h"
+
+SceneMenu::SceneMenu(Application* app, bool start_enabled) : Module(app, start_enabled)
+{
+	
+}
+
 
 SceneMenu::~SceneMenu()
 {
@@ -26,12 +34,34 @@ bool SceneMenu::Start()
 
 	app->render->camera.x = 0;
 	app->render->camera.y = 0;*/
+	menu.PushBack({ 0,0,800,800 });
+	menu.PushBack({ 1100,0,800,800 });
+	menu.PushBack({ 2200,0,800,800 });
+	menu.PushBack({ 0,936,800,800 });
+	menu.PushBack({ 1100,936,800,800 });
+	menu.PushBack({ 2200,936,800,800 });
+	menu.PushBack({ 0,1887,800,800 });
+	menu.PushBack({ 1100,1887,800,800 });
+	
+
+	App->renderer->camera.x = 0;
+	App->renderer->camera.y = 0;
+
+	menuTexture = App->textures->Load("Assets/Textures/menu.png");
+	menuTextureAnim = App->textures->Load("Assets/Textures/menu spritesheet.png"); 
+
+
 
 	return true;
 }
 
-bool SceneMenu::Update(float dt)
+update_status SceneMenu::Update()
 {
+	App->renderer->Blit(menuTexture, 0, 0);
+
+
+
+
 	/*if (appStart) {
 		if (iconCounter <= 120) {
 			appStart = false;
@@ -48,7 +78,7 @@ bool SceneMenu::Update(float dt)
 		}
 	}*/
 
-	return true;
+	return update_status::UPDATE_CONTINUE;
 }
 
 //bool SceneMenu::PostUpdate()

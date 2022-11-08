@@ -4,6 +4,11 @@
 
 #include "SDL/include/SDL_render.h"
 
+ModuleFadeToBlack::ModuleFadeToBlack(Application* app, bool start_enabled) : Module(app, start_enabled)
+{
+
+}
+
 ModuleFadeToBlack::~ModuleFadeToBlack()
 {
 

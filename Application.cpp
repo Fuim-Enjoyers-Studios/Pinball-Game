@@ -10,6 +10,7 @@
 #include "ModuleSceneIntro.h"
 #include "ModuleFonts.h"
 #include "ModuleSceneMenu.h"
+#include "ModuleFadeToBlack.h"
 
 #include "Application.h"
 
@@ -21,9 +22,10 @@ Application::Application()
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
 	player = new ModulePlayer(this);
-	scene_intro = new ModuleSceneIntro(this);
+	scene_intro = new ModuleSceneIntro(this, false);
 	physics = new ModulePhysics(this);
 	fonts = new ModuleFonts(this);
+	fade = new ModuleFadeToBlack(this);
 	menu = new SceneMenu(this);
 
 	// The order of calls is very important!
@@ -38,9 +40,9 @@ Application::Application()
 	AddModule(input);
 	AddModule(audio);
 	AddModule(fonts);
-	AddModule(menu);
 	
 	// Scenes
+	AddModule(menu);
 	AddModule(scene_intro);
 	
 	// Player

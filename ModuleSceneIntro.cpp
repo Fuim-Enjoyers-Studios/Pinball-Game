@@ -6,6 +6,7 @@
 #include "ModuleTextures.h"
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
+#include "ModuleFonts.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -25,10 +26,14 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("pinball/wheel.png"); 
-	box = App->textures->Load("pinball/crate.png");
-	rick = App->textures->Load("pinball/rick_head.png");
-	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
+	circle = App->textures->Load("Assets/Textures/wheel.png"); 
+	box = App->textures->Load("Assets/Textures/crate.png");
+	rick = App->textures->Load("Assets/Textures/rick_head.png");
+	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
+
+	//
+	char lookupTable[] = { "! @,_./0123456789$;< ?abcdefghijklmnopqrstuvwxyz" };
+	scoreFont = App->fonts->Load("Assets/Fonts/rtype_font.png", lookupTable, 1);
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
@@ -164,6 +169,9 @@ update_status ModuleSceneIntro::Update()
 		if(normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
+
+	//ESCRIBE EL TEXTO EN PANTALLA
+	App->fonts->BlitText(150, 248, scoreFont, "regalon maricon se tatuara literalmente una lanza xd");
 
 	return UPDATE_CONTINUE;
 }

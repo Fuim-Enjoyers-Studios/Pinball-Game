@@ -24,6 +24,7 @@ public:
 
 	PhysBody* sensor;
 	bool sensed;
+	int scoreFont = -1;
 
 	SDL_Texture* circle;
 	SDL_Texture* box;

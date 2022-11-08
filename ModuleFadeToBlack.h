@@ -19,11 +19,11 @@ public:
 
 	// Called at the middle of the application loop
 	// Updates the fade logic
-	bool Update(float dt);
+	update_status Update();
 
 	// Called at the end of the application loop
 	// Performs the render call of a black rectangle with transparency
-	//bool PostUpdate();
+	update_status PostUpdate();
 
 	// Called from another module
 	// Starts the fade process which has two steps, fade_out and fade_in

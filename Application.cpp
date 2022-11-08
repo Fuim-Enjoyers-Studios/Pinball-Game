@@ -26,7 +26,7 @@ Application::Application()
 	physics = new ModulePhysics(this);
 	fonts = new ModuleFonts(this);
 	fade = new ModuleFadeToBlack(this);
-	menu = new SceneMenu(this);
+	menu = new SceneMenu(this, true);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -35,11 +35,11 @@ Application::Application()
 	// Main Modules
 	AddModule(window);
 	AddModule(physics);
-	AddModule(renderer);
 	AddModule(textures);
 	AddModule(input);
 	AddModule(audio);
 	AddModule(fonts);
+	AddModule(fade);
 	
 	// Scenes
 	AddModule(menu);
@@ -47,6 +47,9 @@ Application::Application()
 	
 	// Player
 	AddModule(player);
+
+	//renderer at the end allways
+	AddModule(renderer);
 }
 
 Application::~Application()

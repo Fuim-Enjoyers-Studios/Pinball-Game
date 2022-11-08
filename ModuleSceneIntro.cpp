@@ -24,6 +24,8 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
+	SDL_ShowCursor(true);
+
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	circle = App->textures->Load("Assets/Textures/wheel.png"); 

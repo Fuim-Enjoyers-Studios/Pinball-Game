@@ -34,6 +34,7 @@ public:
 	SDL_Texture* menuTexture = nullptr;
 	SDL_Texture* menuTextureAnim = nullptr;
 	SDL_Texture* iconTexture = nullptr;
+	SDL_Texture* cursorTexture = nullptr;
 	Animation* currentMenuAnim;
 	Animation menu;
 	Animation icon;

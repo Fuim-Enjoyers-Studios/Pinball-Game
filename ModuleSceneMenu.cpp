@@ -39,6 +39,7 @@ bool SceneMenu::Start()
 	menuTexture = App->textures->Load("Assets/Textures/menu.png");
 	menuTextureAnim = App->textures->Load("Assets/Textures/menu spritesheet.png");
 	iconTexture = App->textures->Load("Assets/Textures/lightsaber.png");
+	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
 
 	transitionanim = false;
 	playOrExit = true;
@@ -48,6 +49,27 @@ bool SceneMenu::Start()
 
 update_status SceneMenu::Update()
 {
+	//click start with mouse
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN &&
+		App->input->GetMouseX() > 300 &&
+		App->input->GetMouseX() < 500 &&
+		App->input->GetMouseY() > 563 &&
+		App->input->GetMouseY() < 611)
+	{
+		App->fade->FadeToBlack(this, (Module*)App->scene_intro, 60);
+	}
+	//click exit with mouse
+	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN &&
+		App->input->GetMouseX() > 330 &&
+		App->input->GetMouseX() < 470 &&
+		App->input->GetMouseY() > 611 &&
+		App->input->GetMouseY() < 662)
+	{
+		return update_status::UPDATE_STOP;
+	}
+
+
+
 	if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) {
 
 		if (playOrExit == true) {
@@ -79,12 +101,32 @@ update_status SceneMenu::Update()
 		App->renderer->Blit(menuTexture, 0, 0);
 	}
 
-	if (playOrExit == true && transitionanim == false) {
+
+	if (App->input->GetMouseX() > 300 &&
+		App->input->GetMouseX() < 500 &&
+		App->input->GetMouseY() > 563 &&
+		App->input->GetMouseY() < 611)
+	{
+		App->renderer->Blit(iconTexture, 152, 560);
+		playOrExit = true;
+	}
+	else if (App->input->GetMouseX() > 330 &&
+		App->input->GetMouseX() < 470 &&
+		App->input->GetMouseY() > 611 &&
+		App->input->GetMouseY() < 662)
+	{
+		App->renderer->Blit(iconTexture, 152, 615);
+		playOrExit = false;
+	}
+	else if (playOrExit == true && transitionanim == false) {
 		App->renderer->Blit(iconTexture, 152, 560);
 	}
 	else if(transitionanim == false){
 		App->renderer->Blit(iconTexture, 152, 615);
 	}
+
+	SDL_ShowCursor(false);
+	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
 
 	return update_status::UPDATE_CONTINUE;
 }
@@ -95,6 +137,8 @@ bool SceneMenu::CleanUp()
 
 	App->textures->Unload(menuTexture);
 	App->textures->Unload(menuTextureAnim);
+	App->textures->Unload(iconTexture);
+	App->textures->Unload(cursorTexture);
 
 	return true;
 }

@@ -32,8 +32,8 @@ bool ModuleSceneIntro::Start()
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 
 	//LOADS FONTS
-	char lookupTable[] = { "! @,_./0123456789$;< ?abcdefghijklmnopqrstuvwxyz" };
-	scoreFont = App->fonts->Load("Assets/Fonts/rtype_font.png", lookupTable, 1);
+	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
+	scoreFont = App->fonts->Load("Assets/Fonts/yellowStarWarsFont.png", lookupTable, 1);
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
@@ -171,7 +171,8 @@ update_status ModuleSceneIntro::Update()
 	}
 
 	//ESCRIBE EL TEXTO EN PANTALLA
-	App->fonts->BlitText(150, 248, scoreFont, "regalon maricon se tatuara literalmente una lanza xd");
+	App->fonts->BlitText(0, 248, scoreFont, "13143 score");
+
 
 	return UPDATE_CONTINUE;
 }

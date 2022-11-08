@@ -3,6 +3,9 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "ModuleTextures.h"
+#include "ModuleInput.h"
+#include "ModuleAudio.h"
+#include "ModuleFadeToBlack.h"
 
 SceneMenu::SceneMenu(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -18,22 +21,6 @@ SceneMenu::~SceneMenu()
 // Load assets
 bool SceneMenu::Start()
 {
-	/*LOG("Loading Scene Menu");
-
-	pugi::xml_node configNode = app->LoadConfigFileToVar();
-	pugi::xml_node config = configNode.child(name.GetString());
-
-	menu.PushBack({ 0,0,512,384 });
-	menu.PushBack({ 0,384,512,384 });
-	menu.PushBack({ 512,384,512,384 });
-	menu.PushBack({ 512,0,512,384 });
-	menu.loop = false;
-	menu.speed = 0.1f;
-
-	menuTexture = app->tex->Load(config.child("menu").attribute("texturepath").as_string());
-
-	app->render->camera.x = 0;
-	app->render->camera.y = 0;*/
 	menu.PushBack({ 0,0,800,800 });
 	menu.PushBack({ 1100,0,800,800 });
 	menu.PushBack({ 2200,0,800,800 });
@@ -42,13 +29,18 @@ bool SceneMenu::Start()
 	menu.PushBack({ 2200,936,800,800 });
 	menu.PushBack({ 0,1887,800,800 });
 	menu.PushBack({ 1100,1887,800,800 });
+	menu.speed = 0.2f;
 	
 
 	App->renderer->camera.x = 0;
 	App->renderer->camera.y = 0;
 
 	menuTexture = App->textures->Load("Assets/Textures/menu.png");
-	menuTextureAnim = App->textures->Load("Assets/Textures/menu spritesheet.png"); 
+	menuTextureAnim = App->textures->Load("Assets/Textures/menu spritesheet.png");
+	iconTexture = App->textures->Load("Assets/Textures/lightsaber.png");
+
+	transitionanim = false;
+	playOrExit = true;
 
 
 
@@ -57,49 +49,56 @@ bool SceneMenu::Start()
 
 update_status SceneMenu::Update()
 {
-	App->renderer->Blit(menuTexture, 0, 0);
+	if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) {
 
-
-
-
-	/*if (appStart) {
-		if (iconCounter <= 120) {
-			appStart = false;
+		if (playOrExit == true) {
+			transitionanim = true;
 		}
-		iconCounter--;
+		else {
+			return update_status::UPDATE_STOP;
+		}	
 	}
-	else if (iconCounter > 0) {
-		menu.Update();
-		iconCounter--;
+	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_DOWN) {
+		playOrExit = true;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) {
+		playOrExit = false;
+	}
+
+	
+	
+	
+	if (transitionanim == true) {
+		currentMenuAnim = &menu;
+		currentMenuAnim->Update();
+		SDL_Rect rect = currentMenuAnim->GetCurrentFrame();
+		App->renderer->Blit(menuTextureAnim, 0, 0, &rect);
+		if (menu.GetCurrentFrameint() == 7) {
+			this->Disable(); 
+		}
+		
 	}
 	else {
-		if (app->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
-			app->fade->FadeToBlack(this, (Module*)app->sceneLevel1, 30);
-		}
-	}*/
+		menu.Reset();
+		App->renderer->Blit(menuTexture, 0, 0);
+	}
+
+	if (playOrExit == true && transitionanim == false) {
+		App->renderer->Blit(iconTexture, 152, 560);
+	}
+	else if(transitionanim == false){
+		App->renderer->Blit(iconTexture, 152, 615);
+	}
 
 	return update_status::UPDATE_CONTINUE;
 }
-
-//bool SceneMenu::PostUpdate()
-//{
-//	bool ret = true;
-//
-//	// Draw everything --------------------------------------
-//	SDL_Rect rect = menu.GetCurrentFrame();
-//	app->render->DrawTexture(menuTexture, 0, 0, &rect);
-//
-//	if (app->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
-//		ret = false;
-//
-//	return ret;
-//}
 
 bool SceneMenu::CleanUp()
 {
 	LOG("Deleting background assets");
 
-	//app->tex->Unload(menuTexture);
+	App->textures->Unload(menuTexture);
+	App->textures->Unload(menuTextureAnim);
 
 	return true;
 }

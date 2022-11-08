@@ -10,11 +10,11 @@
     <Filter Include="Source Files\Scenes">
       <UniqueIdentifier>{1d0e1512-47d4-4237-b859-43ca1967d3c4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Utils">
-      <UniqueIdentifier>{7cade534-b448-49fc-952f-25537fd0d3ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{82bd3fe6-57ec-4d68-a0b4-b837e6b72ddb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Utils">
+      <UniqueIdentifier>{7cade534-b448-49fc-952f-25537fd0d3ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

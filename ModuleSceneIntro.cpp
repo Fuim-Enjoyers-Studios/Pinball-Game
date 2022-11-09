@@ -13,6 +13,12 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
+
+	background_anim.PushBack({ 0, 0, 800, 800 });
+	background_anim.PushBack({ 0, 0, 800, 800 });
+	background_anim.PushBack({ 0, 0, 800, 800 });
+	background_anim.loop = false;
+	background_anim.speed = 0.1f;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -31,6 +37,8 @@ bool ModuleSceneIntro::Start()
 	circle = App->textures->Load("Assets/Textures/wheel.png"); 
 	box = App->textures->Load("Assets/Textures/crate.png");
 	rick = App->textures->Load("Assets/Textures/rick_head.png");
+	background = App->textures->Load("Assets/Textures/background_spritesheet.png");
+
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 
 	//LOADS FONTS
@@ -53,6 +61,9 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	SDL_Rect r = background_anim.GetCurrentFrame();
+	App->renderer->Blit(background, 0, 0, &r);
+
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		ray_on = !ray_on;

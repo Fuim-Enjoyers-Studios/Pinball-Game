@@ -133,10 +133,18 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
+PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, bool isStatic)
 {
 	b2BodyDef body;
-	body.type = b2_dynamicBody;
+	if (isStatic)
+	{
+		body.type = b2_staticBody;
+	}
+	else if (!isStatic)
+	{
+		body.type = b2_dynamicBody;
+	}
+
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = world->CreateBody(&body);
@@ -163,7 +171,6 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size)
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = pbody->height = 0;
-
 	return pbody;
 }
 

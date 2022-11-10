@@ -23,6 +23,7 @@ public:
 	p2List<PhysBody*> boxes;
 	p2List<PhysBody*> ricks;
 
+
 	PhysBody* sensor;
 	bool sensed;
 	int scoreFont = -1;
@@ -31,10 +32,49 @@ public:
 	SDL_Texture* box;
 	SDL_Texture* rick;
 	SDL_Texture* background;
+	SDL_Texture* cursorTexture = nullptr;
 
 	Animation background_anim;
 
 	uint bonus_fx;
 	p2Point<int> ray;
 	bool ray_on;
+
+	// Pivot 0, 0
+	int pinballHitbox[68] = {
+		560, 575,
+		560, 119,
+		558, 92,
+		552, 75,
+		547, 70,
+		541, 65,
+		531, 59,
+		519, 54,
+		506, 52,
+		87, 52,
+		74, 54,
+		64, 58,
+		55, 63,
+		46, 72,
+		42, 80,
+		40, 91,
+		38, 109,
+		38, 515,
+		128, 563,
+		128, 618,
+		234, 618,
+		234, 629,
+		10, 629,
+		9, 789,
+		510, 789,
+		510, 628,
+		274, 628,
+		274, 618,
+		377, 618,
+		377, 563,
+		521, 487,
+		521, 140,
+		534, 140,
+		534, 575,
+	};
 };

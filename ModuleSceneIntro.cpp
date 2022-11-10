@@ -30,7 +30,8 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	SDL_ShowCursor(true);
+	//shows normal
+	//SDL_ShowCursor(true);
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
@@ -38,6 +39,7 @@ bool ModuleSceneIntro::Start()
 	box = App->textures->Load("Assets/Textures/crate.png");
 	rick = App->textures->Load("Assets/Textures/rick_head.png");
 	background = App->textures->Load("Assets/Textures/background_spritesheet.png");
+	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 
@@ -47,6 +49,10 @@ bool ModuleSceneIntro::Start()
 
 	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
+	//creation of hitboxes of the PINBALL
+
+	App->physics->CreateChain(0, 0, pinballHitbox, 68, true);
+	
 	return ret;
 }
 
@@ -186,6 +192,9 @@ update_status ModuleSceneIntro::Update()
 	//ESCRIBE EL TEXTO EN PANTALLA
 	App->fonts->BlitText(0, 248, scoreFont, "13143 score");
 
+	//CURSOR
+	SDL_ShowCursor(false);
+	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
 
 	return UPDATE_CONTINUE;
 }

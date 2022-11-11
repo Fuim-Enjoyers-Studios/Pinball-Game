@@ -7,6 +7,7 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 #include "ModuleFonts.h"
+#include "ModuleFadeToBlack.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -46,13 +47,18 @@ bool ModuleSceneIntro::Start()
 	//LOADS FONTS
 	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
 	scoreFont = App->fonts->Load("Assets/Fonts/yellowStarWarsFont.png", lookupTable, 1);
-
-	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
+	if (sensor==nullptr)
+	{
+		sensor = App->physics->CreateRectangleSensor(254, 712, 40, 50);
+	}
+	sensor->body->SetAwake(true);
 
 	//creation of hitboxes of the PINBALL
-
-	App->physics->CreateChain(0, 0, pinballHitbox, 68, true);
-	
+	if (pinball == nullptr)
+	{
+		pinball = App->physics->CreateChain(0, 0, pinballHitbox, 60, true);
+	}
+	pinball->body->SetAwake(true);
 	return ret;
 }
 
@@ -60,6 +66,19 @@ bool ModuleSceneIntro::Start()
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
+	App->textures->Unload(circle);
+	App->textures->Unload(box);
+	App->textures->Unload(rick);
+	App->textures->Unload(background);
+	App->textures->Unload(cursorTexture);
+	App->fonts->UnLoad(scoreFont);
+	ricks.clear();
+	circles.clear();
+	boxes.clear();
+	sensor->body->SetAwake(false);
+	pinball->body->SetAwake(false);
+
+
 
 	return true;
 }
@@ -67,6 +86,11 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	if (App->input->GetKey(SDL_SCANCODE_ESCAPE))
+	{
+		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
+	}
+
 	SDL_Rect r = background_anim.GetCurrentFrame();
 	App->renderer->Blit(background, 0, 0, &r);
 

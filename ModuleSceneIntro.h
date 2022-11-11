@@ -25,6 +25,7 @@ public:
 
 
 	PhysBody* sensor;
+	PhysBody* pinball;
 	bool sensed;
 	int scoreFont = -1;
 
@@ -41,7 +42,7 @@ public:
 	bool ray_on;
 
 	// Pivot 0, 0
-	int pinballHitbox[68] = {
+	int pinballHitbox[60] = {
 		560, 575,
 		560, 119,
 		558, 92,
@@ -63,12 +64,8 @@ public:
 		128, 563,
 		128, 618,
 		234, 618,
-		234, 629,
-		10, 629,
-		9, 789,
-		510, 789,
-		510, 628,
-		274, 628,
+		234, 738,
+		274, 738,
 		274, 618,
 		377, 618,
 		377, 563,

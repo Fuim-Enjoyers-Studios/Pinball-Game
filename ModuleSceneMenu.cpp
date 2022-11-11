@@ -7,6 +7,7 @@
 #include "ModuleAudio.h"
 #include "ModuleFadeToBlack.h"
 #include "ModuleSceneIntro.h"
+#include "Globals.h"
 
 SceneMenu::SceneMenu(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -49,6 +50,9 @@ bool SceneMenu::Start()
 
 update_status SceneMenu::Update()
 {
+
+
+
 	//click start with mouse
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN &&
 		App->input->GetMouseX() > 300 &&
@@ -71,7 +75,8 @@ update_status SceneMenu::Update()
 
 
 
-	if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN) {
+	if (App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN ||
+		App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN) {
 
 		if (playOrExit == true) {
 			transitionanim = true;
@@ -132,7 +137,36 @@ update_status SceneMenu::Update()
 	}
 
 	SDL_ShowCursor(false);
-	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
+
+
+	//IF CURSOR GOES OUT THE WINDOW IT WILL RETURN FROM THE OTHER SIDE
+	// 
+	//if (App->input->GetMouseX() >= SCREEN_WIDTH - 1)
+	//{
+	//	POINT p;
+	//	GetCursorPos(&p);
+	//	SetCursorPos(p.x - (SCREEN_WIDTH - 1), p.y);
+	//}
+	//if (App->input->GetMouseX() <= 1)
+	//{
+	//	POINT p;
+	//	GetCursorPos(&p);
+	//	SetCursorPos(p.x + (SCREEN_WIDTH - 1), p.y);
+	//}
+	//if (App->input->GetMouseY() >= SCREEN_HEIGHT - 1)
+	//{
+	//	POINT p;
+	//	GetCursorPos(&p);
+	//	SetCursorPos(p.x, p.y - (SCREEN_HEIGHT - 1));
+	//}
+	//if (App->input->GetMouseY() <= 1)
+	//{
+	//	POINT p;
+	//	GetCursorPos(&p);
+	//	SetCursorPos(p.x, p.y + (SCREEN_HEIGHT - 1));
+	//}
+
+App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
 
 	return update_status::UPDATE_CONTINUE;
 }

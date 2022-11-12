@@ -37,12 +37,14 @@ public:
 	SDL_Texture* cursorTexture = nullptr;
 	Animation* currentMenuAnim;
 	Animation menu;
-	Animation icon;
 
-	int iconCounter = 240;
+
 	bool appStart = true;
 	bool transitionanim;
 	bool playOrExit;
+
+	uint introfx;
+	uint musicmenu;
 };
 
 #endif

@@ -31,7 +31,7 @@ bool SceneMenu::Start()
 	menu.PushBack({ 2200,936,800,800 });
 	menu.PushBack({ 0,1887,800,800 });
 	menu.PushBack({ 1100,1887,800,800 });
-	menu.speed = 0.2f;
+	menu.speed = 0.1f;
 	menu.loop = false;
 
 	App->renderer->camera.x = 0;
@@ -41,6 +41,7 @@ bool SceneMenu::Start()
 	menuTextureAnim = App->textures->Load("Assets/Textures/menu spritesheet.png");
 	iconTexture = App->textures->Load("Assets/Textures/lightsaber.png");
 	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
+	introfx = App->audio->LoadFx("Assets/Audio/xwing.wav");
 
 	transitionanim = false;
 	playOrExit = true;
@@ -50,8 +51,6 @@ bool SceneMenu::Start()
 
 update_status SceneMenu::Update()
 {
-
-
 
 	//click start with mouse
 	if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN &&
@@ -80,6 +79,7 @@ update_status SceneMenu::Update()
 
 		if (playOrExit == true) {
 			transitionanim = true;
+			App->audio->PlayFx(introfx);
 		}
 		else {
 			return update_status::UPDATE_STOP;
@@ -93,12 +93,14 @@ update_status SceneMenu::Update()
 	}
 	
 	if (transitionanim == true) {
+		
 		currentMenuAnim = &menu;
 		currentMenuAnim->Update();
 		SDL_Rect rect = currentMenuAnim->GetCurrentFrame();
 		App->renderer->Blit(menuTextureAnim, 0, 0, &rect);
 		if (menu.GetCurrentFrameint() == 7) {
 			App->fade->FadeToBlack(this, (Module*)App->scene_intro, 60);
+			menu.SetCurrentFrame(7);
 		}
 		
 	}
@@ -166,7 +168,7 @@ update_status SceneMenu::Update()
 	//	SetCursorPos(p.x, p.y + (SCREEN_HEIGHT - 1));
 	//}
 
-App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
+	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
 
 	return update_status::UPDATE_CONTINUE;
 }

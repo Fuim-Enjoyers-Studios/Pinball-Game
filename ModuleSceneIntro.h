@@ -26,6 +26,9 @@ public:
 
 	PhysBody* sensor;
 	PhysBody* pinball;
+	PhysBody* planet1;
+	PhysBody* planet2;
+	PhysBody* planet3;
 	bool sensed;
 	int scoreFont = -1;
 

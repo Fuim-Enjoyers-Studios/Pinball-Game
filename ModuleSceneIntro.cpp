@@ -47,11 +47,14 @@ bool ModuleSceneIntro::Start()
 	//LOADS FONTS
 	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
 	scoreFont = App->fonts->Load("Assets/Fonts/yellowStarWarsFont.png", lookupTable, 1);
+
+	//creation of a sensor for the win lose condition
 	if (sensor==nullptr)
 	{
 		sensor = App->physics->CreateRectangleSensor(254, 712, 40, 50);
 	}
 	sensor->body->SetAwake(true);
+	sensor->body->SetActive(true);
 
 	//creation of hitboxes of the PINBALL
 	if (pinball == nullptr)
@@ -59,6 +62,37 @@ bool ModuleSceneIntro::Start()
 		pinball = App->physics->CreateChain(0, 0, pinballHitbox, 60, true);
 	}
 	pinball->body->SetAwake(true);
+	pinball->body->SetActive(true);
+
+	//creation of the planet earth collider
+	if (planet1 == nullptr) {
+		planet1 = App->physics->CreateCircle(125,325,50);
+		planet1->body->SetType(b2BodyType::b2_staticBody);
+		planet1->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	planet1->body->SetAwake(true);
+	planet1->body->SetActive(true);
+
+	//creation of the planet earth collider
+	if (planet2 == nullptr) {
+		planet2 = App->physics->CreateCircle(375, 240, 40);
+		planet2->body->SetType(b2BodyType::b2_staticBody);
+		planet2->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	planet2->body->SetAwake(true);
+	planet2->body->SetActive(true);
+
+	//creation of the planet earth collider
+	if (planet3 == nullptr) {
+		planet3 = App->physics->CreateCircle(125, 125, 25);
+		planet3->body->SetType(b2BodyType::b2_staticBody);
+		planet3->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	planet3->body->SetAwake(true);
+	planet3->body->SetActive(true);
+
+
+
 	return ret;
 }
 
@@ -75,11 +109,16 @@ bool ModuleSceneIntro::CleanUp()
 	ricks.clear();
 	circles.clear();
 	boxes.clear();
-	sensor->body->SetAwake(false);
-	pinball->body->SetAwake(false);
 
-
-
+	//deactivates the fixtures in order to dont have collisions anymore
+	if (pinball != nullptr) {
+		planet1->body->SetActive(false);
+		planet2->body->SetActive(false);
+		planet3->body->SetActive(false);
+		pinball->body->SetActive(false);
+		sensor->body->SetActive(false);
+	}
+	
 	return true;
 }
 
@@ -103,7 +142,7 @@ update_status ModuleSceneIntro::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 25));
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 15));
 		circles.getLast()->data->listener = this;
 	}
 
@@ -214,7 +253,7 @@ update_status ModuleSceneIntro::Update()
 	}
 
 	//ESCRIBE EL TEXTO EN PANTALLA
-	App->fonts->BlitText(0, 248, scoreFont, "13143 score");
+	App->fonts->BlitText(0, 248, scoreFont, "TU MAMA LA MAMA");
 
 	//CURSOR
 	SDL_ShowCursor(false);

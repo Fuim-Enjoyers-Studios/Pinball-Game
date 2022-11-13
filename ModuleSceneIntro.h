@@ -29,8 +29,10 @@ public:
 	PhysBody* planet1;
 	PhysBody* planet2;
 	PhysBody* planet3;
+	PhysBody* Ball;
 	bool sensed;
 	int scoreFont = -1;
+	int x, y;
 
 	SDL_Texture* ball;
 	SDL_Texture* box;
@@ -50,6 +52,9 @@ public:
 	uint boing_fx;
 	p2Point<int> ray;
 	bool ray_on;
+	float desiredvel;
+
+	int forcetimer;
 
 	// Pivot 0, 0
 	int pinballHitbox[60] = {

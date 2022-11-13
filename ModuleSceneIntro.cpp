@@ -64,6 +64,9 @@ bool ModuleSceneIntro::Start()
 	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
 	scoreFont = App->fonts->Load("Assets/Fonts/yellowStarWarsFont.png", lookupTable, 1);
 
+	forcetimer = 0;
+	desiredvel = 0;
+
 	//creation of a sensor for the win lose condition
 	if (sensor==nullptr)
 	{
@@ -112,7 +115,14 @@ bool ModuleSceneIntro::Start()
 	planet3->body->SetActive(true);
 	planet3->ctype = ColliderType::BOING;
 
-
+	if (Ball == nullptr) {
+		Ball = App->physics->CreateCircle(550, 525, 13);
+		Ball->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	Ball->body->SetAwake(true);
+	Ball->body->SetActive(true);
+	Ball->ctype = ColliderType::BALL;
+	Ball->listener = this;
 
 	return ret;
 }
@@ -139,6 +149,7 @@ bool ModuleSceneIntro::CleanUp()
 		planet3->body->SetActive(false);
 		pinball->body->SetActive(false);
 		sensor->body->SetActive(false);
+		Ball->body->SetActive(false);
 	}
 	
 	return true;
@@ -147,6 +158,7 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE))
 	{
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
@@ -169,16 +181,32 @@ update_status ModuleSceneIntro::Update()
 	r = trigger_anim.GetCurrentFrame();
 	App->renderer->Blit(trigger, 302, 547, &r);
 
-	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
 	{
-		ray_on = !ray_on;
-		ray.x = App->input->GetMouseX();
-		ray.y = App->input->GetMouseY();
+		if (desiredvel == -300) {
+
+		}
+		else {
+			--desiredvel;
+		}
+		
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP) {
+		desiredvel = desiredvel / 10.0f;
+  		b2Vec2 BallInitVelocity = b2Vec2(0.0f, desiredvel);
+		Ball->GetPosition(x, y);
+
+		if(x>530 && x < 540 && y >545 && y < 555){
+			Ball->body->ApplyLinearImpulse(BallInitVelocity, Ball->body->GetWorldCenter(), true);
+		}
+
+		desiredvel = 0;
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12));
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 16));
 		circles.getLast()->data->listener = this;
 		circles.getLast()->data->ctype = ColliderType::BALL;
 	}
@@ -200,7 +228,34 @@ update_status ModuleSceneIntro::Update()
 	{
 		int x, y;
 		c->data->GetPosition(x, y);
-		App->renderer->Blit(ball, x, y, &r, 1.0f, c->data->GetRotation());
+		if(c->data->Contains(App->input->GetMouseX(), App->input->GetMouseY()))
+			App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
+		c = c->next;
+	}
+
+	c = boxes.getFirst();
+
+	while(c != NULL)
+	{
+		int x, y;
+		c->data->GetPosition(x, y);
+		App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
+		if(ray_on)
+		{
+			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
+			if(hit >= 0)
+				ray_hit = hit;
+		}
+		c = c->next;
+	}
+
+	c = ricks.getFirst();
+
+	while(c != NULL)
+	{
+		int x, y;
+		c->data->GetPosition(x, y);
+		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 
@@ -218,7 +273,7 @@ update_status ModuleSceneIntro::Update()
 	}
 
 	//ESCRIBE EL TEXTO EN PANTALLA
-	App->fonts->BlitText(0, 248, scoreFont, "TU MAMA LA MAMA");
+	App->fonts->BlitText(0, 248, scoreFont, "Tu MAMA LA MAMA");
 
 	//CURSOR
 	SDL_ShowCursor(false);
@@ -230,8 +285,6 @@ update_status ModuleSceneIntro::Update()
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
-
-
 
 	if (bodyA->ctype == ColliderType::BALL)
 	{

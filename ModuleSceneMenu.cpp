@@ -59,6 +59,7 @@ update_status SceneMenu::Update()
 		App->input->GetMouseY() > 563 &&
 		App->input->GetMouseY() < 611)
 	{
+		App->audio->PlayFx(introfx);
 		transitionanim = true;
 		//App->fade->FadeToBlack(this, (Module*)App->scene_intro, 60);
 	}

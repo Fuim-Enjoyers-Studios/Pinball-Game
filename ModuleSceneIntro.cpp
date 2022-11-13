@@ -65,7 +65,7 @@ bool ModuleSceneIntro::Start()
 	scoreFont = App->fonts->Load("Assets/Fonts/yellowStarWarsFont.png", lookupTable, 1);
 
 	forcetimer = 0;
-	desiredvel = 0;
+	desiredvel = -1;
 
 	//creation of a sensor for the win lose condition
 	if (sensor == nullptr)
@@ -172,36 +172,44 @@ update_status ModuleSceneIntro::Update()
 	SDL_Rect r = background_anim.GetCurrentFrame();
 	App->renderer->Blit(background, 0, 0, &r);
 
-	if (triggerCounter == 20) {
-		trigger_anim.Update();
-		ball_anim.Update();
-		triggerCounter = 0;
-	}
-	else { triggerCounter++; }
-	r = trigger_anim.GetCurrentFrame();
-	App->renderer->Blit(trigger, 302, 547, &r);
+	
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
 	{
-		if (desiredvel == -300) {
 
+		if (triggerCounter == 40) {
+			ball_anim.Update();
+			triggerCounter = 0;
+			desiredvel -= 1 * triggerAnimCounter;
+
+			trigger_anim.SetCurrentFrame(triggerAnimCounter);
+			if (triggerAnimCounter < 4) {
+				++triggerAnimCounter;
+			}
+			
+	
 		}
-		else {
-			--desiredvel;
+		else { 
+			triggerCounter++; 
 		}
+		r = trigger_anim.GetCurrentFrame();
+		App->renderer->Blit(trigger, 302, 547, &r);
 
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP) {
-		desiredvel = desiredvel / 10.0f;
 		b2Vec2 BallInitVelocity = b2Vec2(0.0f, desiredvel);
 		Ball->GetPosition(x, y);
-
+	
 		if (x > 530 && x < 540 && y >545 && y < 555) {
 			Ball->body->ApplyLinearImpulse(BallInitVelocity, Ball->body->GetWorldCenter(), true);
 		}
 
-		desiredvel = 0;
+
+		trigger_anim.Reset();
+		triggerAnimCounter = 1;
+
+		desiredvel = -1;
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)

@@ -47,6 +47,7 @@ public:
 	Animation ball_anim;
 
 	int triggerCounter = 0;
+	int triggerAnimCounter = 1;
 
 	uint bonus_fx;
 	uint boing_fx;

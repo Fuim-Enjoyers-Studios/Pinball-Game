@@ -49,7 +49,7 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	ball = App->textures->Load("Assets/Textures/ball.png"); 
+	ball = App->textures->Load("Assets/Textures/ball.png");
 	box = App->textures->Load("Assets/Textures/crate.png");
 	rick = App->textures->Load("Assets/Textures/rick_head.png");
 	background = App->textures->Load("Assets/Textures/background_spritesheet.png");
@@ -68,7 +68,7 @@ bool ModuleSceneIntro::Start()
 	desiredvel = 0;
 
 	//creation of a sensor for the win lose condition
-	if (sensor==nullptr)
+	if (sensor == nullptr)
 	{
 		sensor = App->physics->CreateRectangleSensor(254, 712, 40, 50);
 	}
@@ -87,7 +87,7 @@ bool ModuleSceneIntro::Start()
 
 	//creation of the planet earth collider
 	if (planet1 == nullptr) {
-		planet1 = App->physics->CreateCircle(125,325,50);
+		planet1 = App->physics->CreateCircle(125, 325, 50);
 		planet1->body->SetType(b2BodyType::b2_staticBody);
 		planet1->body->GetFixtureList()->SetRestitution(0.6f);
 	}
@@ -151,14 +151,14 @@ bool ModuleSceneIntro::CleanUp()
 		sensor->body->SetActive(false);
 		Ball->body->SetActive(false);
 	}
-	
+
 	return true;
 }
 
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	
+
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE))
 	{
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
@@ -167,21 +167,21 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
 	{
 		background_anim.Update();
-		ball_anim.Update();
 	}
 
 	SDL_Rect r = background_anim.GetCurrentFrame();
 	App->renderer->Blit(background, 0, 0, &r);
 
-	if (triggerCounter==20) {
+	if (triggerCounter == 20) {
 		trigger_anim.Update();
+		ball_anim.Update();
 		triggerCounter = 0;
 	}
 	else { triggerCounter++; }
 	r = trigger_anim.GetCurrentFrame();
 	App->renderer->Blit(trigger, 302, 547, &r);
 
-	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
 	{
 		if (desiredvel == -300) {
 
@@ -189,30 +189,30 @@ update_status ModuleSceneIntro::Update()
 		else {
 			--desiredvel;
 		}
-		
+
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP) {
 		desiredvel = desiredvel / 10.0f;
-  		b2Vec2 BallInitVelocity = b2Vec2(0.0f, desiredvel);
+		b2Vec2 BallInitVelocity = b2Vec2(0.0f, desiredvel);
 		Ball->GetPosition(x, y);
 
-		if(x>530 && x < 540 && y >545 && y < 555){
+		if (x > 530 && x < 540 && y >545 && y < 555) {
 			Ball->body->ApplyLinearImpulse(BallInitVelocity, Ball->body->GetWorldCenter(), true);
 		}
 
 		desiredvel = 0;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 16));
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12));
 		circles.getLast()->data->listener = this;
 		circles.getLast()->data->ctype = ColliderType::BALL;
 	}
 
 	// Prepare for raycast ------------------------------------------------------
-	
+
 	iPoint mouse;
 	mouse.x = App->input->GetMouseX();
 	mouse.y = App->input->GetMouseY();
@@ -224,51 +224,24 @@ update_status ModuleSceneIntro::Update()
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
 	r = { 0, 24 * 4, 24, 24 };
-	while(c != NULL)
+	while (c != NULL)
 	{
 		int x, y;
 		c->data->GetPosition(x, y);
-		if(c->data->Contains(App->input->GetMouseX(), App->input->GetMouseY()))
-			App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
-		c = c->next;
-	}
-
-	c = boxes.getFirst();
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
-		if(ray_on)
-		{
-			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
-			if(hit >= 0)
-				ray_hit = hit;
-		}
-		c = c->next;
-	}
-
-	c = ricks.getFirst();
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(ball, x, y, &r, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 
 	// ray -----------------
-	if(ray_on == true)
+	if (ray_on == true)
 	{
-		fVector destination(mouse.x-ray.x, mouse.y-ray.y);
+		fVector destination(mouse.x - ray.x, mouse.y - ray.y);
 		destination.Normalize();
 		destination *= ray_hit;
 
 		App->renderer->DrawLine(ray.x, ray.y, ray.x + destination.x, ray.y + destination.y, 255, 255, 255);
 
-		if(normal.x != 0.0f)
+		if (normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 

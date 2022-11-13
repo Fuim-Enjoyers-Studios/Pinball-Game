@@ -25,6 +25,9 @@ int main(int argc, char ** argv)
 
 	while (state != MAIN_EXIT)
 	{
+		//DELAY 60 fps
+		SDL_Delay((int)(1000 / 60));
+
 		switch (state)
 		{
 		case MAIN_CREATION:

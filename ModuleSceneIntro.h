@@ -41,6 +41,7 @@ public:
 	Animation background_anim;
 
 	uint bonus_fx;
+	uint boing_fx;
 	p2Point<int> ray;
 	bool ray_on;
 

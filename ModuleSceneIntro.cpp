@@ -43,6 +43,7 @@ bool ModuleSceneIntro::Start()
 	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
+	boing_fx = App->audio->LoadFx("Assets/Audio/boingSound.wav");
 
 	//LOADS FONTS
 	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
@@ -55,6 +56,7 @@ bool ModuleSceneIntro::Start()
 	}
 	sensor->body->SetAwake(true);
 	sensor->body->SetActive(true);
+	sensor->ctype = ColliderType::SENSOR;
 
 	//creation of hitboxes of the PINBALL
 	if (pinball == nullptr)
@@ -63,6 +65,7 @@ bool ModuleSceneIntro::Start()
 	}
 	pinball->body->SetAwake(true);
 	pinball->body->SetActive(true);
+	pinball->ctype = ColliderType::WALL;
 
 	//creation of the planet earth collider
 	if (planet1 == nullptr) {
@@ -72,6 +75,7 @@ bool ModuleSceneIntro::Start()
 	}
 	planet1->body->SetAwake(true);
 	planet1->body->SetActive(true);
+	planet1->ctype = ColliderType::BOING;
 
 	//creation of the planet earth collider
 	if (planet2 == nullptr) {
@@ -81,6 +85,7 @@ bool ModuleSceneIntro::Start()
 	}
 	planet2->body->SetAwake(true);
 	planet2->body->SetActive(true);
+	planet2->ctype = ColliderType::BOING;
 
 	//creation of the planet earth collider
 	if (planet3 == nullptr) {
@@ -90,6 +95,7 @@ bool ModuleSceneIntro::Start()
 	}
 	planet3->body->SetAwake(true);
 	planet3->body->SetActive(true);
+	planet3->ctype = ColliderType::BOING;
 
 
 
@@ -142,8 +148,9 @@ update_status ModuleSceneIntro::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 15));
+		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12));
 		circles.getLast()->data->listener = this;
+		circles.getLast()->data->ctype = ColliderType::BALL;
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
@@ -266,8 +273,25 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
 
-	App->audio->PlayFx(bonus_fx);
 
+
+	if (bodyA->ctype == ColliderType::BALL)
+	{
+		switch (bodyB->ctype)
+		{
+		case ColliderType::BALL:
+			break;
+		case ColliderType::WALL:
+			//App->audio->PlayFx(bonus_fx);
+			break;
+		case ColliderType::BOING:
+			App->audio->PlayFx(boing_fx);
+			b2Vec2 vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
+
+			bodyA->body->SetLinearVelocity(vec);
+			break;
+		}
+	}
 	/*
 	if(bodyA)
 	{

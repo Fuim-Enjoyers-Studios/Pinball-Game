@@ -44,6 +44,8 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
+	b2RevoluteJoint* joint;
+
 	//shows normal
 	//SDL_ShowCursor(true);
 
@@ -123,6 +125,18 @@ bool ModuleSceneIntro::Start()
 	Ball->body->SetActive(true);
 	Ball->ctype = ColliderType::BALL;
 	Ball->listener = this;
+
+	//FLIPPERS
+	flipper = App->physics->CreateChain(200, 200, star_destroyer, 8);
+	staticPin = App->physics->CreateRectangle(200, 200, 2, 2);
+	flipper->body->SetType(b2BodyType::b2_dynamicBody);
+	staticPin->body->SetType(b2BodyType::b2_staticBody);
+
+	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 200, 200);
+
+	joint->SetLimits(-30 * DEGTORAD, 30 * DEGTORAD);
+	joint->SetMotorSpeed(-20);
+	joint->SetMaxMotorTorque(20);
 
 	return ret;
 }

@@ -30,6 +30,8 @@ public:
 	PhysBody* planet2;
 	PhysBody* planet3;
 	PhysBody* Ball;
+	PhysBody* flipper;
+	PhysBody* staticPin;
 	bool sensed;
 	int scoreFont = -1;
 	int x, y;
@@ -56,6 +58,14 @@ public:
 	float desiredvel;
 
 	int forcetimer;
+
+	// Pivot 0, 0
+	int star_destroyer[8] = {
+		4, 49,
+		97, 19,
+		98, 49,
+		97, 80
+	};
 
 	// Pivot 0, 0
 	int pinballHitbox[60] = {

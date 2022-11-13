@@ -61,6 +61,8 @@ public:
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
 
+	b2RevoluteJoint* CreateRevoluteJoint(PhysBody* pBody1, PhysBody* pBody2, float widht, float height);
+
 private:
 
 	bool debug;

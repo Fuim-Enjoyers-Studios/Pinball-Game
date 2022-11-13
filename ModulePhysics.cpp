@@ -365,3 +365,12 @@ void ModulePhysics::BeginContact(b2Contact* contact)
 	if(physB && physB->listener != NULL)
 		physB->listener->OnCollision(physB, physA);
 }
+
+b2RevoluteJoint* ModulePhysics::CreateRevoluteJoint(PhysBody* pBody1, PhysBody* pBody2, float widht, float height)
+{
+	b2RevoluteJointDef temp;
+	temp.Initialize(pBody1->body, pBody2->body, { PIXEL_TO_METERS(widht), PIXEL_TO_METERS(height) });
+	temp.collideConnected = false;
+
+	return (b2RevoluteJoint*) world->CreateJoint(&temp);
+}

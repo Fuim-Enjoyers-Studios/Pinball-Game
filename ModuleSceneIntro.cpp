@@ -11,15 +11,28 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	circle = box = rick = NULL;
+	ball = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
 
 	background_anim.PushBack({ 0, 0, 800, 800 });
-	background_anim.PushBack({ 0, 0, 800, 800 });
-	background_anim.PushBack({ 0, 0, 800, 800 });
-	background_anim.loop = false;
-	background_anim.speed = 0.1f;
+	background_anim.PushBack({ 800, 0, 800, 800 });
+	background_anim.loop = true;
+
+	trigger_anim.PushBack({ 0, 260 * 0, 260, 260 });
+	trigger_anim.PushBack({ 0, 260 * 1, 260, 260 });
+	trigger_anim.PushBack({ 0, 260 * 2, 260, 260 });
+	trigger_anim.PushBack({ 0, 260 * 3, 260, 260 });
+	trigger_anim.PushBack({ 0, 260 * 4, 260, 260 });
+	trigger_anim.loop = false;
+	trigger_anim.speed = 0.1f;
+
+	ball_anim.PushBack({ 0, 24 * 0, 24, 24 });
+	ball_anim.PushBack({ 0, 24 * 1, 24, 24 });
+	ball_anim.PushBack({ 0, 24 * 2, 24, 24 });
+	ball_anim.PushBack({ 0, 24 * 3, 24, 24 });
+	ball_anim.PushBack({ 0, 24 * 4, 24, 24 });
+	ball_anim.loop = false;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -36,11 +49,13 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("Assets/Textures/wheel.png"); 
+	ball = App->textures->Load("Assets/Textures/ball.png"); 
 	box = App->textures->Load("Assets/Textures/crate.png");
 	rick = App->textures->Load("Assets/Textures/rick_head.png");
 	background = App->textures->Load("Assets/Textures/background_spritesheet.png");
 	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
+	scoreBoard = App->textures->Load("Assets/Textures/score_board.png");
+	trigger = App->textures->Load("Assets/Textures/trigger.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 	boing_fx = App->audio->LoadFx("Assets/Audio/boingSound.wav");
@@ -106,7 +121,7 @@ bool ModuleSceneIntro::Start()
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
-	App->textures->Unload(circle);
+	App->textures->Unload(ball);
 	App->textures->Unload(box);
 	App->textures->Unload(rick);
 	App->textures->Unload(background);
@@ -115,6 +130,7 @@ bool ModuleSceneIntro::CleanUp()
 	ricks.clear();
 	circles.clear();
 	boxes.clear();
+	trigger_anim.Reset();
 
 	//deactivates the fixtures in order to dont have collisions anymore
 	if (pinball != nullptr) {
@@ -136,8 +152,22 @@ update_status ModuleSceneIntro::Update()
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
 	}
 
+	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
+	{
+		background_anim.Update();
+		ball_anim.Update();
+	}
+
 	SDL_Rect r = background_anim.GetCurrentFrame();
 	App->renderer->Blit(background, 0, 0, &r);
+
+	if (triggerCounter==20) {
+		trigger_anim.Update();
+		triggerCounter = 0;
+	}
+	else { triggerCounter++; }
+	r = trigger_anim.GetCurrentFrame();
+	App->renderer->Blit(trigger, 302, 547, &r);
 
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
@@ -153,52 +183,6 @@ update_status ModuleSceneIntro::Update()
 		circles.getLast()->data->ctype = ColliderType::BALL;
 	}
 
-	if(App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
-	{
-		boxes.add(App->physics->CreateRectangle(App->input->GetMouseX(), App->input->GetMouseY(), 100, 50));
-	}
-
-	if(App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
-	{
-		// Pivot 0, 0
-		int rick_head[64] = {
-			14, 36,
-			42, 40,
-			40, 0,
-			75, 30,
-			88, 4,
-			94, 39,
-			111, 36,
-			104, 58,
-			107, 62,
-			117, 67,
-			109, 73,
-			110, 85,
-			106, 91,
-			109, 99,
-			103, 104,
-			100, 115,
-			106, 121,
-			103, 125,
-			98, 126,
-			95, 137,
-			83, 147,
-			67, 147,
-			53, 140,
-			46, 132,
-			34, 136,
-			38, 126,
-			23, 123,
-			30, 114,
-			10, 102,
-			29, 90,
-			0, 75,
-			30, 62
-		};
-
-		ricks.add(App->physics->CreateChain(App->input->GetMouseX(), App->input->GetMouseY(), rick_head, 64));
-	}
-
 	// Prepare for raycast ------------------------------------------------------
 	
 	iPoint mouse;
@@ -211,38 +195,12 @@ update_status ModuleSceneIntro::Update()
 	// All draw functions ------------------------------------------------------
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
+	r = { 0, 24 * 4, 24, 24 };
 	while(c != NULL)
 	{
 		int x, y;
 		c->data->GetPosition(x, y);
-		if(c->data->Contains(App->input->GetMouseX(), App->input->GetMouseY()))
-			App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
-		c = c->next;
-	}
-
-	c = boxes.getFirst();
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
-		if(ray_on)
-		{
-			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
-			if(hit >= 0)
-				ray_hit = hit;
-		}
-		c = c->next;
-	}
-
-	c = ricks.getFirst();
-
-	while(c != NULL)
-	{
-		int x, y;
-		c->data->GetPosition(x, y);
-		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(ball, x, y, &r, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 

@@ -32,13 +32,19 @@ public:
 	bool sensed;
 	int scoreFont = -1;
 
-	SDL_Texture* circle;
+	SDL_Texture* ball;
 	SDL_Texture* box;
 	SDL_Texture* rick;
 	SDL_Texture* background;
+	SDL_Texture* scoreBoard;
+	SDL_Texture* trigger;
 	SDL_Texture* cursorTexture = nullptr;
 
 	Animation background_anim;
+	Animation trigger_anim;
+	Animation ball_anim;
+
+	int triggerCounter = 0;
 
 	uint bonus_fx;
 	uint boing_fx;

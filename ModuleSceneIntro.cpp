@@ -45,6 +45,7 @@ bool ModuleSceneIntro::Start()
 	bool ret = true;
 
 	b2RevoluteJoint* joint;
+	b2RevoluteJoint* joint2;
 
 	//shows normal
 	//SDL_ShowCursor(true);
@@ -127,16 +128,29 @@ bool ModuleSceneIntro::Start()
 	Ball->listener = this;
 
 	//FLIPPERS
-	flipper = App->physics->CreateChain(200, 200, star_destroyer, 8);
-	staticPin = App->physics->CreateRectangle(200, 200, 2, 2);
+	flipper = App->physics->CreateChain(270, 530, star_destroyer, 8);
+	flipper->body->SetTransform({ 5.38,11.36 }, -0.21);
+	staticPin = App->physics->CreateRectangle(270, 530, 2, 2);
 	flipper->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin->body->SetType(b2BodyType::b2_staticBody);
 
-	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 200, 200);
+	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 270, 530);
 
 	joint->SetLimits(-30 * DEGTORAD, 30 * DEGTORAD);
 	joint->SetMotorSpeed(-20);
 	joint->SetMaxMotorTorque(20);
+
+	flipper2 = App->physics->CreateChain(270, 530, star_destroyer, 8);
+	flipper2->body->SetTransform({ 4.35,13.27 }, 3.34);
+	staticPin2 = App->physics->CreateRectangle(270, 530, 2, 2);
+	flipper2->body->SetType(b2BodyType::b2_dynamicBody);
+	staticPin2->body->SetType(b2BodyType::b2_staticBody);
+
+	joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 270, 530);
+
+	joint2->SetLimits(-30 * DEGTORAD, 30 * DEGTORAD);
+	joint2->SetMotorSpeed(-20);
+	joint2->SetMaxMotorTorque(20);
 
 	return ret;
 }
@@ -176,6 +190,10 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE))
 	{
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_SPACE))
+	{
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)

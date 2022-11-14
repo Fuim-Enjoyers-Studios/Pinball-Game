@@ -90,7 +90,7 @@ bool ModuleSceneIntro::Start()
 
 	//creation of the planet earth collider
 	if (planet1 == nullptr) {
-		planet1 = App->physics->CreateCircle(125, 325, 50);
+		planet1 = App->physics->CreateCircle(125, 322, 50);
 		planet1->body->SetType(b2BodyType::b2_staticBody);
 		planet1->body->GetFixtureList()->SetRestitution(0.6f);
 	}
@@ -100,7 +100,7 @@ bool ModuleSceneIntro::Start()
 
 	//creation of the planet earth collider
 	if (planet2 == nullptr) {
-		planet2 = App->physics->CreateCircle(375, 240, 40);
+		planet2 = App->physics->CreateCircle(374, 238, 40);
 		planet2->body->SetType(b2BodyType::b2_staticBody);
 		planet2->body->GetFixtureList()->SetRestitution(0.6f);
 	}
@@ -117,6 +117,33 @@ bool ModuleSceneIntro::Start()
 	planet3->body->SetAwake(true);
 	planet3->body->SetActive(true);
 	planet3->ctype = ColliderType::BOING;
+
+	if (planet4 == nullptr) {
+		planet4 = App->physics->CreateCircle(45,67, 90);
+		planet4->body->SetType(b2BodyType::b2_staticBody);
+		planet4->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	planet4->body->SetAwake(true);
+	planet4->body->SetActive(true);
+	planet4->ctype = ColliderType::BOING;
+
+	if (asteroidsleft == nullptr) {
+		asteroidsleft = App->physics->CreateCircle(195, 225, 16);
+		asteroidsleft->body->SetType(b2BodyType::b2_staticBody);
+		asteroidsleft->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	asteroidsleft->body->SetAwake(true);
+	asteroidsleft->body->SetActive(true);
+	asteroidsleft->ctype = ColliderType::BOING;
+
+	if (asteroidsright == nullptr) {
+		asteroidsright = App->physics->CreateCircle(280, 185, 16);
+		asteroidsright->body->SetType(b2BodyType::b2_staticBody);
+		asteroidsright->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	asteroidsright->body->SetAwake(true);
+	asteroidsright->body->SetActive(true);
+	asteroidsright->ctype = ColliderType::BOING;
 
 	if (Ball == nullptr) {
 		Ball = App->physics->CreateCircle(550, 525, 13);
@@ -175,9 +202,13 @@ bool ModuleSceneIntro::CleanUp()
 		planet1->body->SetActive(false);
 		planet2->body->SetActive(false);
 		planet3->body->SetActive(false);
+		planet4->body->SetActive(false);
+		asteroidsleft->body->SetActive(false);
+		asteroidsright->body->SetActive(false);
 		pinball->body->SetActive(false);
 		sensor->body->SetActive(false);
 		Ball->body->SetActive(false);
+
 	}
 
 	return true;
@@ -194,7 +225,8 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT))
 	{
-		//flipper2->body->SetLinearVelocity({ 0,10 });
+		//flipper2->body->SetLinearVelocity({ 0,1000 });
+		//flipper2->body->ApplyAngularImpulse(3000,true);
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT))
@@ -239,7 +271,7 @@ update_status ModuleSceneIntro::Update()
 		b2Vec2 BallInitVelocity = b2Vec2(0.0f, desiredvel);
 		Ball->GetPosition(x, y);
 	
-		if (x > 530 && x < 540 && y >545 && y < 555) {
+		if (x > 525 && x < 545 && y >535 && y < 565) {
 			Ball->body->ApplyLinearImpulse(BallInitVelocity, Ball->body->GetWorldCenter(), true);
 		}
 

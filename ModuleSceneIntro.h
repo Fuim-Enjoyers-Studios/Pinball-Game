@@ -29,6 +29,10 @@ public:
 	PhysBody* planet1;
 	PhysBody* planet2;
 	PhysBody* planet3;
+	PhysBody* planet4;
+	PhysBody* asteroidsleft;
+	PhysBody* asteroidsright;
+	PhysBody* ship;
 	PhysBody* Ball;
 	PhysBody* flipper;
 	PhysBody* staticPin;

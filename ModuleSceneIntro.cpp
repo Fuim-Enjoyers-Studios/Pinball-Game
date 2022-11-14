@@ -130,7 +130,7 @@ bool ModuleSceneIntro::Start()
 	//FLIPPERS
 	flipper = App->physics->CreateChain(270, 530, star_destroyer, 8);
 	flipper->body->SetTransform({ 5.38,11.36 }, -0.21);
-	staticPin = App->physics->CreateRectangle(270, 530, 2, 2);
+	staticPin = App->physics->CreateRectangle(355, 600, 2, 2);
 	flipper->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin->body->SetType(b2BodyType::b2_staticBody);
 
@@ -142,7 +142,7 @@ bool ModuleSceneIntro::Start()
 
 	flipper2 = App->physics->CreateChain(270, 530, star_destroyer, 8);
 	flipper2->body->SetTransform({ 4.35,13.27 }, 3.34);
-	staticPin2 = App->physics->CreateRectangle(270, 530, 2, 2);
+	staticPin2 = App->physics->CreateRectangle(150, 600, 2, 2);
 	flipper2->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin2->body->SetType(b2BodyType::b2_staticBody);
 
@@ -192,8 +192,14 @@ update_status ModuleSceneIntro::Update()
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE))
+	if (App->input->GetKey(SDL_SCANCODE_LEFT))
 	{
+		//flipper2->body->SetLinearVelocity({ 0,10 });
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT))
+	{
+
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)

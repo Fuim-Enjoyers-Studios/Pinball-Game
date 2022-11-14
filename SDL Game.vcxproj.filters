@@ -72,6 +72,9 @@
     <ClInclude Include="ModuleFonts.h">
       <Filter>Source Files\Core</Filter>
     </ClInclude>
+    <ClInclude Include="SString.h">
+      <Filter>Source Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModulePlayer.cpp">

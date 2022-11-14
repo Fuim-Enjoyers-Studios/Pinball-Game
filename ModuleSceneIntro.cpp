@@ -11,7 +11,7 @@
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	ball = box = rick = NULL;
+	ball = NULL;
 	ray_on = false;
 	sensed = false;
 
@@ -52,9 +52,9 @@ bool ModuleSceneIntro::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	ball = App->textures->Load("Assets/Textures/ball.png");
-	box = App->textures->Load("Assets/Textures/crate.png");
-	rick = App->textures->Load("Assets/Textures/rick_head.png");
-	background = App->textures->Load("Assets/Textures/background_spritesheet.png");
+	background = App->textures->Load("Assets/Textures/background.png");
+	collision_layout = App->textures->Load("Assets/Textures/collision_layout.png");
+	framework = App->textures->Load("Assets/Textures/framework.png");
 	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
 	scoreBoard = App->textures->Load("Assets/Textures/score_board.png");
 	trigger = App->textures->Load("Assets/Textures/trigger.png");
@@ -146,14 +146,10 @@ bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
 	App->textures->Unload(ball);
-	App->textures->Unload(box);
-	App->textures->Unload(rick);
 	App->textures->Unload(background);
 	App->textures->Unload(cursorTexture);
 	App->fonts->UnLoad(scoreFont);
-	ricks.clear();
 	circles.clear();
-	boxes.clear();
 	trigger_anim.Reset();
 
 	//deactivates the fixtures in order to dont have collisions anymore
@@ -180,13 +176,17 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
 	{
-		background_anim.Update();
+		if(printLayouts){ printLayouts = false; }
+		else{ printLayouts = true; }
 	}
 
 	SDL_Rect r = background_anim.GetCurrentFrame();
 	App->renderer->Blit(background, 0, 0, &r);
 
-	
+	//LAYOUTS PRINTING
+	if (printLayouts) {
+		App->renderer->Blit(collision_layout, 0, 0);
+	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
 	{
@@ -267,8 +267,19 @@ update_status ModuleSceneIntro::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
-	//ESCRIBE EL TEXTO EN PANTALLA
-	App->fonts->BlitText(0, 248, scoreFont, "Tu MAMA LA MAMA");
+	r = ball_anim.GetCurrentFrame();
+	int x, y;
+	Ball->GetPosition(x, y);
+	App->renderer->Blit(ball, x+1, y+1, &r, 1.0f, Ball->GetRotation());
+
+	//LAYOUTS PRINTING
+	if (printLayouts) {
+		App->renderer->Blit(framework, 0, 0);
+		App->renderer->Blit(scoreBoard, 0, 0);
+	}
+
+	//SCOREBOARD PRINTING
+	App->fonts->BlitText(600, 248, scoreFont, "Tu MAMA LA MAMA");
 
 	//CURSOR
 	SDL_ShowCursor(false);

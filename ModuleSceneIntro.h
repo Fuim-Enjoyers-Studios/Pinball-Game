@@ -4,8 +4,24 @@
 #include "p2Point.h"
 #include "Globals.h"
 #include "Animation.h"
+#include "SString.h"
 
 class PhysBody;
+
+class SceneElement
+{
+public:
+	SceneElement() {
+
+	}
+	~SceneElement() {
+
+	}
+
+private:
+	SString name;
+	PhysBody* pbody;
+};
 
 class ModuleSceneIntro : public Module
 {
@@ -20,9 +36,8 @@ public:
 
 public:
 	p2List<PhysBody*> circles;
-	p2List<PhysBody*> boxes;
-	p2List<PhysBody*> ricks;
 
+	p2List<SceneElement*> SceneElements;
 
 	PhysBody* sensor;
 	PhysBody* pinball;
@@ -37,12 +52,14 @@ public:
 	int x, y;
 
 	SDL_Texture* ball;
-	SDL_Texture* box;
-	SDL_Texture* rick;
 	SDL_Texture* background;
 	SDL_Texture* scoreBoard;
 	SDL_Texture* trigger;
+	SDL_Texture* collision_layout;
+	SDL_Texture* framework;
 	SDL_Texture* cursorTexture = nullptr;
+
+	bool printLayouts = false;
 
 	Animation background_anim;
 	Animation trigger_anim;

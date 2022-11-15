@@ -9,6 +9,9 @@
 #include "ModuleFonts.h"
 #include "ModuleFadeToBlack.h"
 
+#define DEAD 0
+#define ALIVE 1
+
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 	ball = NULL;
@@ -192,11 +195,11 @@ update_status ModuleSceneIntro::Update()
 	{
 
 		if (triggerCounter == 40) {
-			ball_anim.Update();
 			triggerCounter = 0;
 			desiredvel -= 1 * triggerAnimCounter;
 
 			trigger_anim.SetCurrentFrame(triggerAnimCounter);
+			if (ball_state == DEAD) { ball_anim.SetCurrentFrame(triggerAnimCounter); }
 			if (triggerAnimCounter < 4) {
 				++triggerAnimCounter;
 			}
@@ -217,10 +220,13 @@ update_status ModuleSceneIntro::Update()
 	
 		if (x > 530 && x < 540 && y >545 && y < 555) {
 			Ball->body->ApplyLinearImpulse(BallInitVelocity, Ball->body->GetWorldCenter(), true);
+			b2Vec2 temp = Ball->body->GetLinearVelocity();
+			if (temp.y < 0) { ball_state = ALIVE; }
 		}
 
 
 		trigger_anim.Reset();
+		if (ball_state == DEAD) { ball_anim.Reset(); }
 		triggerAnimCounter = 1;
 
 		desiredvel = -1;

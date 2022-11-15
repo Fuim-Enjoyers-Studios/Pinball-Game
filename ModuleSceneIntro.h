@@ -35,6 +35,8 @@ public:
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 
 public:
+	int ball_state = 0;
+
 	p2List<PhysBody*> circles;
 
 	p2List<SceneElement*> SceneElements;

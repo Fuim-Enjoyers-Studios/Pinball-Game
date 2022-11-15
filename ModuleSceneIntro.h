@@ -46,12 +46,21 @@ public:
 	PhysBody* planet1;
 	PhysBody* planet2;
 	PhysBody* planet3;
+	PhysBody* planet4;
+	PhysBody* asteroidsleft;
+	PhysBody* asteroidsright;
+	PhysBody* ship;
 	PhysBody* Ball;
 	PhysBody* flipper;
 	PhysBody* staticPin;
+	PhysBody* flipper2;
+	PhysBody* staticPin2;
 	bool sensed;
 	int scoreFont = -1;
 	int x, y;
+
+	bool death = false;
+
 
 	SDL_Texture* ball;
 	SDL_Texture* background;
@@ -81,10 +90,11 @@ public:
 	// Pivot 0, 0
 	int star_destroyer[8] = {
 		4, 49,
-		97, 19,
-		98, 49,
-		97, 80
+		87, 29,
+		98, 50,
+		87, 70
 	};
+	
 
 	// Pivot 0, 0
 	int pinballHitbox[60] = {
@@ -106,14 +116,14 @@ public:
 		40, 91,
 		38, 109,
 		38, 515,
-		128, 563,
+		141, 571,
 		128, 618,
 		234, 618,
 		234, 738,
 		274, 738,
 		274, 618,
 		377, 618,
-		377, 563,
+		364, 571,
 		521, 487,
 		521, 140,
 		534, 140,

@@ -48,6 +48,7 @@ bool ModuleSceneIntro::Start()
 	bool ret = true;
 
 	b2RevoluteJoint* joint;
+	b2RevoluteJoint* joint2;
 
 	//shows normal
 	//SDL_ShowCursor(true);
@@ -79,7 +80,7 @@ bool ModuleSceneIntro::Start()
 	}
 	sensor->body->SetAwake(true);
 	sensor->body->SetActive(true);
-	sensor->ctype = ColliderType::SENSOR;
+	sensor->ctype = ColliderType::DEATH;
 
 	//creation of hitboxes of the PINBALL
 	if (pinball == nullptr)
@@ -92,7 +93,7 @@ bool ModuleSceneIntro::Start()
 
 	//creation of the planet earth collider
 	if (planet1 == nullptr) {
-		planet1 = App->physics->CreateCircle(125, 325, 50);
+		planet1 = App->physics->CreateCircle(125, 322, 50);
 		planet1->body->SetType(b2BodyType::b2_staticBody);
 		planet1->body->GetFixtureList()->SetRestitution(0.6f);
 	}
@@ -102,7 +103,7 @@ bool ModuleSceneIntro::Start()
 
 	//creation of the planet earth collider
 	if (planet2 == nullptr) {
-		planet2 = App->physics->CreateCircle(375, 240, 40);
+		planet2 = App->physics->CreateCircle(374, 238, 40);
 		planet2->body->SetType(b2BodyType::b2_staticBody);
 		planet2->body->GetFixtureList()->SetRestitution(0.6f);
 	}
@@ -120,6 +121,33 @@ bool ModuleSceneIntro::Start()
 	planet3->body->SetActive(true);
 	planet3->ctype = ColliderType::BOING;
 
+	if (planet4 == nullptr) {
+		planet4 = App->physics->CreateCircle(45,67, 90);
+		planet4->body->SetType(b2BodyType::b2_staticBody);
+		planet4->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	planet4->body->SetAwake(true);
+	planet4->body->SetActive(true);
+	planet4->ctype = ColliderType::BOING;
+
+	if (asteroidsleft == nullptr) {
+		asteroidsleft = App->physics->CreateCircle(195, 225, 16);
+		asteroidsleft->body->SetType(b2BodyType::b2_staticBody);
+		asteroidsleft->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	asteroidsleft->body->SetAwake(true);
+	asteroidsleft->body->SetActive(true);
+	asteroidsleft->ctype = ColliderType::BOING;
+
+	if (asteroidsright == nullptr) {
+		asteroidsright = App->physics->CreateCircle(280, 185, 16);
+		asteroidsright->body->SetType(b2BodyType::b2_staticBody);
+		asteroidsright->body->GetFixtureList()->SetRestitution(0.6f);
+	}
+	asteroidsright->body->SetAwake(true);
+	asteroidsright->body->SetActive(true);
+	asteroidsright->ctype = ColliderType::BOING;
+
 	if (Ball == nullptr) {
 		Ball = App->physics->CreateCircle(550, 525, 13);
 		Ball->body->GetFixtureList()->SetRestitution(0.6f);
@@ -130,16 +158,32 @@ bool ModuleSceneIntro::Start()
 	Ball->listener = this;
 
 	//FLIPPERS
-	flipper = App->physics->CreateChain(200, 200, star_destroyer, 8);
-	staticPin = App->physics->CreateRectangle(200, 200, 2, 2);
+	flipper = App->physics->CreateChain(270, 530, star_destroyer, 8);
+	flipper->body->SetTransform({ 5.38,11.36 }, -0.21);
+	staticPin = App->physics->CreateRectangle(355, 600, 2, 2);
 	flipper->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin->body->SetType(b2BodyType::b2_staticBody);
 
-	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 200, 200);
+	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 270, 530);
 
 	joint->SetLimits(-30 * DEGTORAD, 30 * DEGTORAD);
 	joint->SetMotorSpeed(-20);
 	joint->SetMaxMotorTorque(20);
+
+	flipper2 = App->physics->CreateChain(270, 530, star_destroyer, 8);
+	flipper2->body->SetTransform({ 4.35,13.27 }, 3.34);
+	staticPin2 = App->physics->CreateRectangle(150, 600, 2, 2);
+	flipper2->body->SetType(b2BodyType::b2_dynamicBody);
+	staticPin2->body->SetType(b2BodyType::b2_staticBody);
+
+	joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 270, 530);
+
+	joint2->SetLimits(-30 * DEGTORAD, 30 * DEGTORAD);
+	joint2->SetMotorSpeed(-20);
+	joint2->SetMaxMotorTorque(20);
+
+
+
 
 	return ret;
 }
@@ -160,9 +204,13 @@ bool ModuleSceneIntro::CleanUp()
 		planet1->body->SetActive(false);
 		planet2->body->SetActive(false);
 		planet3->body->SetActive(false);
+		planet4->body->SetActive(false);
+		asteroidsleft->body->SetActive(false);
+		asteroidsright->body->SetActive(false);
 		pinball->body->SetActive(false);
 		sensor->body->SetActive(false);
 		Ball->body->SetActive(false);
+
 	}
 
 	return true;
@@ -175,6 +223,17 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE))
 	{
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_LEFT))
+	{
+		//flipper2->body->SetLinearVelocity({ 0,1000 });
+		//flipper2->body->ApplyAngularImpulse(3000,true);
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT))
+	{
+
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
@@ -218,7 +277,7 @@ update_status ModuleSceneIntro::Update()
 		b2Vec2 BallInitVelocity = b2Vec2(0.0f, desiredvel);
 		Ball->GetPosition(x, y);
 	
-		if (x > 530 && x < 540 && y >545 && y < 555) {
+		if (x > 525 && x < 545 && y >535 && y < 565) {
 			Ball->body->ApplyLinearImpulse(BallInitVelocity, Ball->body->GetWorldCenter(), true);
 			b2Vec2 temp = Ball->body->GetLinearVelocity();
 			if (temp.y < 0) { ball_state = ALIVE; }
@@ -272,7 +331,7 @@ update_status ModuleSceneIntro::Update()
 		if (normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
-
+  
 	r = ball_anim.GetCurrentFrame();
 	int x, y;
 	Ball->GetPosition(x, y);
@@ -283,10 +342,19 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(framework, 0, 0);
 		App->renderer->Blit(scoreBoard, 0, 0);
 	}
-
-	//SCOREBOARD PRINTING
+  
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN ||
+		death)
+	{
+		Ball->SetPosition(546, 563);
+		circles.clear();
+		
+		death = false;
+	}
+	
+	//ESCRIBE EL TESTO EN PANTALLA
 	App->fonts->BlitText(600, 248, scoreFont, "Tu MAMA LA MAMA");
-
+  
 	//CURSOR
 	SDL_ShowCursor(false);
 	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
@@ -297,6 +365,7 @@ update_status ModuleSceneIntro::Update()
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
+	b2Vec2 vec;
 
 	if (bodyA->ctype == ColliderType::BALL)
 	{
@@ -309,8 +378,13 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			break;
 		case ColliderType::BOING:
 			App->audio->PlayFx(boing_fx);
-			b2Vec2 vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
-
+			//vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
+			vec = b2Vec2(10,10);
+			bodyA->body->SetLinearVelocity(vec);
+			break;
+		case ColliderType::DEATH:
+			death = true;
+			vec = b2Vec2(0, 0);
 			bodyA->body->SetLinearVelocity(vec);
 			break;
 		}

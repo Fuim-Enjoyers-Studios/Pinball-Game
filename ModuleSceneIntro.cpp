@@ -77,7 +77,7 @@ bool ModuleSceneIntro::Start()
 	}
 	sensor->body->SetAwake(true);
 	sensor->body->SetActive(true);
-	sensor->ctype = ColliderType::SENSOR;
+	sensor->ctype = ColliderType::DEATH;
 
 	//creation of hitboxes of the PINBALL
 	if (pinball == nullptr)
@@ -178,6 +178,9 @@ bool ModuleSceneIntro::Start()
 	joint2->SetLimits(-30 * DEGTORAD, 30 * DEGTORAD);
 	joint2->SetMotorSpeed(-20);
 	joint2->SetMaxMotorTorque(20);
+
+
+
 
 	return ret;
 }
@@ -323,6 +326,21 @@ update_status ModuleSceneIntro::Update()
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
 
+
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN ||
+		death)
+	{
+		Ball->SetPosition(546, 563);
+		circles.clear();
+		
+		death = false;
+	}
+	//IMPRIME LA SPRITE DE LA BOL
+	int xball, yball;
+	Ball->GetPosition(xball,yball);
+	App->renderer->Blit(ball, xball, yball, &r, 1.0f, Ball->GetRotation());
+	
+
 	//ESCRIBE EL TEXTO EN PANTALLA
 	App->fonts->BlitText(0, 248, scoreFont, "Tu MAMA LA MAMA");
 
@@ -336,6 +354,7 @@ update_status ModuleSceneIntro::Update()
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
+	b2Vec2 vec;
 
 	if (bodyA->ctype == ColliderType::BALL)
 	{
@@ -348,8 +367,13 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			break;
 		case ColliderType::BOING:
 			App->audio->PlayFx(boing_fx);
-			b2Vec2 vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
+			vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
 
+			bodyA->body->SetLinearVelocity(vec);
+			break;
+		case ColliderType::DEATH:
+			death = true;
+			vec = b2Vec2(0, 0);
 			bodyA->body->SetLinearVelocity(vec);
 			break;
 		}

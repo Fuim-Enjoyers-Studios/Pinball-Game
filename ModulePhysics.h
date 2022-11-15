@@ -16,7 +16,7 @@ enum class ColliderType {
 	BALL,
 	WALL,
 	BOING,
-	SENSOR,
+	DEATH,
 	UNKNOWN
 	// ..
 };

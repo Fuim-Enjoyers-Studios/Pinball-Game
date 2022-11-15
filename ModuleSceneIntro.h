@@ -42,6 +42,9 @@ public:
 	int scoreFont = -1;
 	int x, y;
 
+	bool death = false;
+
+
 	SDL_Texture* ball;
 	SDL_Texture* box;
 	SDL_Texture* rick;
@@ -94,14 +97,14 @@ public:
 		40, 91,
 		38, 109,
 		38, 515,
-		128, 563,
+		141, 571,
 		128, 618,
 		234, 618,
 		234, 738,
 		274, 738,
 		274, 618,
 		377, 618,
-		377, 563,
+		364, 571,
 		521, 487,
 		521, 140,
 		534, 140,

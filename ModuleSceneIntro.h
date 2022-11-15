@@ -36,6 +36,7 @@ public:
 
 public:
 	int ball_state = 0;
+	bool die = false;
 
 	p2List<PhysBody*> circles;
 
@@ -58,9 +59,6 @@ public:
 	bool sensed;
 	int scoreFont = -1;
 	int x, y;
-
-	bool death = false;
-
 
 	SDL_Texture* ball;
 	SDL_Texture* background;

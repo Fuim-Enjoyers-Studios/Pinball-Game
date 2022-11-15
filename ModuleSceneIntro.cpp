@@ -149,7 +149,7 @@ bool ModuleSceneIntro::Start()
 	asteroidsright->ctype = ColliderType::BOING;
 
 	if (Ball == nullptr) {
-		Ball = App->physics->CreateCircle(550, 525, 13);
+		Ball = App->physics->CreateCircle(550, 525, 12);
 		Ball->body->GetFixtureList()->SetRestitution(0.6f);
 	}
 	Ball->body->SetAwake(true);
@@ -285,7 +285,6 @@ update_status ModuleSceneIntro::Update()
 
 
 		trigger_anim.Reset();
-		if (ball_state == DEAD) { ball_anim.Reset(); }
 		triggerAnimCounter = 1;
 
 		desiredvel = -1;
@@ -335,7 +334,7 @@ update_status ModuleSceneIntro::Update()
 	r = ball_anim.GetCurrentFrame();
 	int x, y;
 	Ball->GetPosition(x, y);
-	App->renderer->Blit(ball, x+1, y+1, &r, 1.0f, Ball->GetRotation());
+	App->renderer->Blit(ball, x, y, &r, 1.0f, Ball->GetRotation());
 
 	//LAYOUTS PRINTING
 	if (printLayouts) {
@@ -343,13 +342,13 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(scoreBoard, 0, 0);
 	}
   
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN ||
-		death)
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN || die)
 	{
 		Ball->SetPosition(546, 563);
 		circles.clear();
-		
-		death = false;
+		ball_anim.Reset();
+		ball_state = DEAD;
+		die = false;
 	}
 	
 	//ESCRIBE EL TESTO EN PANTALLA
@@ -383,7 +382,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			bodyA->body->SetLinearVelocity(vec);
 			break;
 		case ColliderType::DEATH:
-			death = true;
+			die = true;
 			vec = b2Vec2(0, 0);
 			bodyA->body->SetLinearVelocity(vec);
 			break;

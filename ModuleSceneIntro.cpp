@@ -367,8 +367,8 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			break;
 		case ColliderType::BOING:
 			App->audio->PlayFx(boing_fx);
-			vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
-
+			//vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
+			vec = b2Vec2(10,10);
 			bodyA->body->SetLinearVelocity(vec);
 			break;
 		case ColliderType::DEATH:

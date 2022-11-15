@@ -9,9 +9,12 @@
 #include "ModuleFonts.h"
 #include "ModuleFadeToBlack.h"
 
+#define DEAD 0
+#define ALIVE 1
+
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	ball = box = rick = NULL;
+	ball = NULL;
 	ray_on = false;
 	sensed = false;
 
@@ -53,9 +56,9 @@ bool ModuleSceneIntro::Start()
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
 	ball = App->textures->Load("Assets/Textures/ball.png");
-	box = App->textures->Load("Assets/Textures/crate.png");
-	rick = App->textures->Load("Assets/Textures/rick_head.png");
-	background = App->textures->Load("Assets/Textures/background_spritesheet.png");
+	background = App->textures->Load("Assets/Textures/background.png");
+	collision_layout = App->textures->Load("Assets/Textures/collision_layout.png");
+	framework = App->textures->Load("Assets/Textures/framework.png");
 	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
 	scoreBoard = App->textures->Load("Assets/Textures/score_board.png");
 	trigger = App->textures->Load("Assets/Textures/trigger.png");
@@ -190,14 +193,10 @@ bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
 	App->textures->Unload(ball);
-	App->textures->Unload(box);
-	App->textures->Unload(rick);
 	App->textures->Unload(background);
 	App->textures->Unload(cursorTexture);
 	App->fonts->UnLoad(scoreFont);
-	ricks.clear();
 	circles.clear();
-	boxes.clear();
 	trigger_anim.Reset();
 
 	//deactivates the fixtures in order to dont have collisions anymore
@@ -239,23 +238,27 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
 	{
-		background_anim.Update();
+		if(printLayouts){ printLayouts = false; }
+		else{ printLayouts = true; }
 	}
 
 	SDL_Rect r = background_anim.GetCurrentFrame();
 	App->renderer->Blit(background, 0, 0, &r);
 
-	
+	//LAYOUTS PRINTING
+	if (printLayouts) {
+		App->renderer->Blit(collision_layout, 0, 0);
+	}
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
 	{
 
 		if (triggerCounter == 40) {
-			ball_anim.Update();
 			triggerCounter = 0;
 			desiredvel -= 1 * triggerAnimCounter;
 
 			trigger_anim.SetCurrentFrame(triggerAnimCounter);
+			if (ball_state == DEAD) { ball_anim.SetCurrentFrame(triggerAnimCounter); }
 			if (triggerAnimCounter < 4) {
 				++triggerAnimCounter;
 			}
@@ -276,10 +279,13 @@ update_status ModuleSceneIntro::Update()
 	
 		if (x > 525 && x < 545 && y >535 && y < 565) {
 			Ball->body->ApplyLinearImpulse(BallInitVelocity, Ball->body->GetWorldCenter(), true);
+			b2Vec2 temp = Ball->body->GetLinearVelocity();
+			if (temp.y < 0) { ball_state = ALIVE; }
 		}
 
 
 		trigger_anim.Reset();
+		if (ball_state == DEAD) { ball_anim.Reset(); }
 		triggerAnimCounter = 1;
 
 		desiredvel = -1;
@@ -325,8 +331,18 @@ update_status ModuleSceneIntro::Update()
 		if (normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
+  
+	r = ball_anim.GetCurrentFrame();
+	int x, y;
+	Ball->GetPosition(x, y);
+	App->renderer->Blit(ball, x+1, y+1, &r, 1.0f, Ball->GetRotation());
 
-
+	//LAYOUTS PRINTING
+	if (printLayouts) {
+		App->renderer->Blit(framework, 0, 0);
+		App->renderer->Blit(scoreBoard, 0, 0);
+	}
+  
 	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN ||
 		death)
 	{
@@ -335,15 +351,10 @@ update_status ModuleSceneIntro::Update()
 		
 		death = false;
 	}
-	//IMPRIME LA SPRITE DE LA BOL
-	int xball, yball;
-	Ball->GetPosition(xball,yball);
-	App->renderer->Blit(ball, xball, yball, &r, 1.0f, Ball->GetRotation());
 	
-
-	//ESCRIBE EL TEXTO EN PANTALLA
-	App->fonts->BlitText(0, 248, scoreFont, "Tu MAMA LA MAMA");
-
+	//ESCRIBE EL TESTO EN PANTALLA
+	App->fonts->BlitText(600, 248, scoreFont, "Tu MAMA LA MAMA");
+  
 	//CURSOR
 	SDL_ShowCursor(false);
 	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());

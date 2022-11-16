@@ -47,8 +47,7 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	b2RevoluteJoint* joint;
-	b2RevoluteJoint* joint2;
+
 
 	//shows normal
 	//SDL_ShowCursor(true);
@@ -62,6 +61,7 @@ bool ModuleSceneIntro::Start()
 	cursorTexture = App->textures->Load("Assets/Textures/cursor.png");
 	scoreBoard = App->textures->Load("Assets/Textures/score_board.png");
 	trigger = App->textures->Load("Assets/Textures/trigger.png");
+	rightFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 	boing_fx = App->audio->LoadFx("Assets/Audio/boingSound.wav");
@@ -76,7 +76,7 @@ bool ModuleSceneIntro::Start()
 	//creation of a sensor for the win lose condition
 	if (sensor == nullptr)
 	{
-		sensor = App->physics->CreateRectangleSensor(254, 712, 40, 50);
+		sensor = App->physics->CreateRectangleSensor(253, 732, 227, 10);
 	}
 	sensor->body->SetAwake(true);
 	sensor->body->SetActive(true);
@@ -85,7 +85,7 @@ bool ModuleSceneIntro::Start()
 	//creation of hitboxes of the PINBALL
 	if (pinball == nullptr)
 	{
-		pinball = App->physics->CreateChain(0, 0, pinballHitbox, 60, true);
+		pinball = App->physics->CreateChain(0, 0, pinballHitbox, 52, true);
 	}
 	pinball->body->SetAwake(true);
 	pinball->body->SetActive(true);
@@ -158,29 +158,33 @@ bool ModuleSceneIntro::Start()
 	Ball->listener = this;
 
 	//FLIPPERS
-	flipper = App->physics->CreateChain(270, 530, star_destroyer, 8);
-	flipper->body->SetTransform({ 5.38,11.36 }, -0.21);
-	staticPin = App->physics->CreateRectangle(355, 600, 2, 2);
+	//flipper = App->physics->CreateChain(270, 530, star_destroyer, 8);
+	flipper = App->physics->CreateRectangle(320, 582, 84, 15);
+	//flipper->SetPosition(320, 586, -11);
+	staticPin = App->physics->CreateRectangle(355, 578, 2, 2);
 	flipper->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin->body->SetType(b2BodyType::b2_staticBody);
 
-	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 270, 530);
+	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 578);
 
-	joint->SetLimits(-30 * DEGTORAD, 30 * DEGTORAD);
-	joint->SetMotorSpeed(-20);
+	joint->SetLimits(-50 * DEGTORAD, 15 * DEGTORAD);
+	joint->SetMotorSpeed(20);
 	joint->SetMaxMotorTorque(20);
+	joint->EnableLimit(true);
 
-	flipper2 = App->physics->CreateChain(270, 530, star_destroyer, 8);
-	flipper2->body->SetTransform({ 4.35,13.27 }, 3.34);
-	staticPin2 = App->physics->CreateRectangle(150, 600, 2, 2);
+
+	flipper2 = App->physics->CreateRectangle(186, 582, 84, 15);
+	//flipper2->body->SetTransform({ 4.35,13.27 }, 3.34);
+	staticPin2 = App->physics->CreateRectangle(150, 578, 2, 2);
 	flipper2->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin2->body->SetType(b2BodyType::b2_staticBody);
 
-	joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 270, 530);
+	joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 578);
 
-	joint2->SetLimits(-30 * DEGTORAD, 30 * DEGTORAD);
-	joint2->SetMotorSpeed(-20);
+	joint2->SetLimits(-15 * DEGTORAD, 50 * DEGTORAD);
+	joint2->SetMotorSpeed(20);
 	joint2->SetMaxMotorTorque(20);
+	joint2->EnableLimit(true);
 
 
 
@@ -219,22 +223,41 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
+	//PROVISIONAL PARA CERRAR EL PUTO PROGRAMA DE MIERDA xd lol papu :v:v:v
+	if (App->input->GetKey(SDL_SCANCODE_Q))
+	{
+		return update_status::UPDATE_STOP;
+	}
+	
+	
 
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE))
 	{
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_LEFT))
+
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
-		//flipper2->body->SetLinearVelocity({ 0,1000 });
-		//flipper2->body->ApplyAngularImpulse(3000,true);
+		flipper2->body->SetAngularVelocity(1000 * DEGTORAD * -1);
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
+	{
+		flipper2->body->SetAngularVelocity(1000 * DEGTORAD);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT))
+
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
-		//flipper->SetPosition();
+		flipper->body->SetAngularVelocity(1000 * DEGTORAD);
 	}
+	else if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
+	{
+		flipper->body->SetAngularVelocity(1000 * DEGTORAD * -1);
+	}
+
+
+
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
 	{
@@ -352,12 +375,20 @@ update_status ModuleSceneIntro::Update()
 		die = false;
 	}
 	
+	//illo, aqui imprime el flipper right
+
+	flipper->GetPosition(flipperx, flippery);
+	App->renderer->Blit(rightFlipperTexture, flipperx, flippery, (SDL_Rect*)0, 1.0f, flipper->GetRotation(), 45, 2);
+
+
 	//ESCRIBE EL TESTO EN PANTALLA
 	App->fonts->BlitText(600, 248, scoreFont, "Tu MAMA LA MAMA");
   
 	//CURSOR
 	SDL_ShowCursor(false);
 	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
+
+
 
 	return UPDATE_CONTINUE;
 }

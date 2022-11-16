@@ -7,6 +7,7 @@
 #include "SString.h"
 
 class PhysBody;
+class b2RevoluteJoint;
 
 class SceneElement
 {
@@ -56,6 +57,12 @@ public:
 	PhysBody* staticPin;
 	PhysBody* flipper2;
 	PhysBody* staticPin2;
+
+
+	b2RevoluteJoint* joint;
+	b2RevoluteJoint* joint2;
+
+
 	bool sensed;
 	int scoreFont = -1;
 	int x, y;
@@ -67,6 +74,9 @@ public:
 	SDL_Texture* collision_layout;
 	SDL_Texture* framework;
 	SDL_Texture* cursorTexture = nullptr;
+	SDL_Texture* rightFlipperTexture = nullptr;
+
+	int flipperx, flippery;
 
 	bool printLayouts = false;
 
@@ -95,7 +105,7 @@ public:
 	
 
 	// Pivot 0, 0
-	int pinballHitbox[60] = {
+	int pinballHitbox[52] = {
 		560, 575,
 		560, 119,
 		558, 92,
@@ -114,17 +124,20 @@ public:
 		40, 91,
 		38, 109,
 		38, 515,
-		141, 571,
-		128, 618,
-		234, 618,
-		234, 738,
-		274, 738,
-		274, 618,
-		377, 618,
-		364, 571,
+		139, 571,
+		//128, 618,
+		//234, 618,
+		139, 738,
+		366, 738,
+		//274, 618,
+		//377, 618,
+		366, 571,
 		521, 487,
 		521, 140,
 		534, 140,
 		534, 575,
 	};
+
+
+
 };

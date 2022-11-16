@@ -355,7 +355,7 @@ void PhysBody::GetPosition(int& x, int &y) const
 void PhysBody::SetPosition(int x, int y, float32 angle)
 {
 	b2Vec2 pos = { PIXEL_TO_METERS(x),PIXEL_TO_METERS(y) };
-	body->SetTransform(pos, angle);
+	body->SetTransform(pos, DEGTORAD * angle);	
 }
 
 float PhysBody::GetRotation() const

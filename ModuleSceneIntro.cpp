@@ -82,6 +82,25 @@ bool ModuleSceneIntro::Start()
 	sensor->body->SetActive(true);
 	sensor->ctype = ColliderType::DEATH;
 
+	sensorstart = false;
+	if (sensorStart == nullptr)
+	{
+		sensorStart = App->physics->CreateRectangleSensor(495, 97, 11, 88);
+	}
+	sensorStart->body->SetAwake(true);
+	sensorStart->body->SetActive(true);
+	sensorStart->ctype = ColliderType::SENSORSTART;
+	sensorStart->body->SetType(b2BodyType::b2_staticBody);
+
+	if (startBloquer == nullptr)
+	{
+		startBloquer = App->physics->CreateRectangle(521, 200, 12, 93);
+	}
+	startBloquer->body->SetAwake(true);
+	startBloquer->body->SetActive(true);
+	startBloquer->ctype = ColliderType::WALL;
+	startBloquer->body->SetType(b2BodyType::b2_staticBody);
+
 	//creation of hitboxes of the PINBALL
 	if (pinball == nullptr)
 	{
@@ -158,9 +177,7 @@ bool ModuleSceneIntro::Start()
 	Ball->listener = this;
 
 	//FLIPPERS
-	//flipper = App->physics->CreateChain(270, 530, star_destroyer, 8);
-	flipper = App->physics->CreateRectangle(320, 582, 84, 15);
-	//flipper->SetPosition(320, 586, -11);
+	flipper = App->physics->CreateRectangle(320, 583, 84, 15);
 	staticPin = App->physics->CreateRectangle(355, 578, 2, 2);
 	flipper->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin->body->SetType(b2BodyType::b2_staticBody);
@@ -173,8 +190,7 @@ bool ModuleSceneIntro::Start()
 	joint->EnableLimit(true);
 
 
-	flipper2 = App->physics->CreateRectangle(186, 582, 84, 15);
-	//flipper2->body->SetTransform({ 4.35,13.27 }, 3.34);
+	flipper2 = App->physics->CreateRectangle(186, 583, 84, 15);
 	staticPin2 = App->physics->CreateRectangle(150, 578, 2, 2);
 	flipper2->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin2->body->SetType(b2BodyType::b2_staticBody);
@@ -230,6 +246,15 @@ update_status ModuleSceneIntro::Update()
 	}
 	
 	
+	if (!sensorstart)
+	{
+		startBloquer->SetPosition(527, 187);
+	}
+	else if (sensorstart)
+	{
+		startBloquer->SetPosition(527, 94);
+	}
+
 
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE))
 	{
@@ -241,7 +266,7 @@ update_status ModuleSceneIntro::Update()
 	{
 		flipper2->body->SetAngularVelocity(1000 * DEGTORAD * -1);
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
+	else
 	{
 		flipper2->body->SetAngularVelocity(1000 * DEGTORAD);
 	}
@@ -251,7 +276,7 @@ update_status ModuleSceneIntro::Update()
 	{
 		flipper->body->SetAngularVelocity(1000 * DEGTORAD);
 	}
-	else if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
+	else
 	{
 		flipper->body->SetAngularVelocity(1000 * DEGTORAD * -1);
 	}
@@ -372,6 +397,7 @@ update_status ModuleSceneIntro::Update()
 		circles.clear();
 		ball_anim.Reset();
 		ball_state = DEAD;
+		sensorstart = false;
 		die = false;
 	}
 	
@@ -408,12 +434,17 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			break;
 		case ColliderType::BOING:
 			App->audio->PlayFx(boing_fx);
-			//vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
-			bodyA->body->SetLinearVelocity(b2Vec2(10, 10));
+
+
+			//BIGGER THE BOINGER, BIGGER THE BOING
+			bodyA->body->SetLinearVelocity(b2Vec2(5 + bodyB->width * 0.1, 5 + bodyB->width * 0.1));
 			break;
 		case ColliderType::DEATH:
 			die = true;
 			bodyA->body->SetLinearVelocity(b2Vec2(0, 0));
+			break;
+		case ColliderType::SENSORSTART:
+			sensorstart = true;
 			break;
 		}
 	}

@@ -44,6 +44,8 @@ public:
 	p2List<SceneElement*> SceneElements;
 
 	PhysBody* sensor;
+	PhysBody* sensorStart;
+	PhysBody* startBloquer;
 	PhysBody* pinball;
 	PhysBody* planet1;
 	PhysBody* planet2;
@@ -62,7 +64,7 @@ public:
 	b2RevoluteJoint* joint;
 	b2RevoluteJoint* joint2;
 
-
+	bool sensorstart;
 	bool sensed;
 	int scoreFont = -1;
 	int x, y;

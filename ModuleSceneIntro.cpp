@@ -233,7 +233,7 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT))
 	{
-
+		//flipper->SetPosition();
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
@@ -345,6 +345,7 @@ update_status ModuleSceneIntro::Update()
 	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN || die)
 	{
 		Ball->SetPosition(546, 563);
+		Ball->body->SetLinearVelocity(b2Vec2(0,0));
 		circles.clear();
 		ball_anim.Reset();
 		ball_state = DEAD;
@@ -364,7 +365,6 @@ update_status ModuleSceneIntro::Update()
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	int x, y;
-	b2Vec2 vec;
 
 	if (bodyA->ctype == ColliderType::BALL)
 	{
@@ -378,13 +378,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		case ColliderType::BOING:
 			App->audio->PlayFx(boing_fx);
 			//vec = b2Vec2(bodyB->width - bodyA->width, bodyB->height - bodyA->height);
-			vec = b2Vec2(10,10);
-			bodyA->body->SetLinearVelocity(vec);
+			bodyA->body->SetLinearVelocity(b2Vec2(10, 10));
 			break;
 		case ColliderType::DEATH:
 			die = true;
-			vec = b2Vec2(0, 0);
-			bodyA->body->SetLinearVelocity(vec);
+			bodyA->body->SetLinearVelocity(b2Vec2(0, 0));
 			break;
 		}
 	}

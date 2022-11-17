@@ -77,8 +77,10 @@ public:
 	SDL_Texture* framework;
 	SDL_Texture* cursorTexture = nullptr;
 	SDL_Texture* rightFlipperTexture = nullptr;
+	SDL_Texture* leftFlipperTexture = nullptr;
 
 	int flipperx, flippery;
+	int flipper2x, flipper2y;
 
 	bool printLayouts = false;
 

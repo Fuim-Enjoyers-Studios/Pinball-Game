@@ -62,6 +62,7 @@ bool ModuleSceneIntro::Start()
 	scoreBoard = App->textures->Load("Assets/Textures/score_board.png");
 	trigger = App->textures->Load("Assets/Textures/trigger.png");
 	rightFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer.png");
+	leftFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer_left.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 	boing_fx = App->audio->LoadFx("Assets/Audio/boingSound.wav");
@@ -72,6 +73,7 @@ bool ModuleSceneIntro::Start()
 
 	forcetimer = 0;
 	desiredvel = -1;
+
 
 	//creation of a sensor for the win lose condition
 	if (sensor == nullptr)
@@ -178,9 +180,14 @@ bool ModuleSceneIntro::Start()
 
 	//FLIPPERS
 	flipper = App->physics->CreateRectangle(320, 583, 84, 15);
-	staticPin = App->physics->CreateRectangle(355, 578, 2, 2);
+	staticPin = App->physics->CreateRectangle(355, 581, 2, 2);
 	flipper->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin->body->SetType(b2BodyType::b2_staticBody);
+	flipper->ctype = ColliderType::WALL;
+
+	
+
+
 
 	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 578);
 
@@ -194,6 +201,7 @@ bool ModuleSceneIntro::Start()
 	staticPin2 = App->physics->CreateRectangle(150, 578, 2, 2);
 	flipper2->body->SetType(b2BodyType::b2_dynamicBody);
 	staticPin2->body->SetType(b2BodyType::b2_staticBody);
+	flipper2->ctype = ColliderType::WALL;
 
 	joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 578);
 
@@ -286,8 +294,7 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
 	{
-		if(printLayouts){ printLayouts = false; }
-		else{ printLayouts = true; }
+		printLayouts = !printLayouts;
 	}
 
 	SDL_Rect r = background_anim.GetCurrentFrame();
@@ -405,6 +412,11 @@ update_status ModuleSceneIntro::Update()
 
 	flipper->GetPosition(flipperx, flippery);
 	App->renderer->Blit(rightFlipperTexture, flipperx, flippery, (SDL_Rect*)0, 1.0f, flipper->GetRotation(), 45, 2);
+
+	//illo, aqui imprime el flipper le
+
+	flipper2->GetPosition(flipper2x, flipper2y);
+	App->renderer->Blit(leftFlipperTexture, flipper2x, flipper2y, (SDL_Rect*)0, 1.0f, flipper2->GetRotation(), 45, 2);
 
 
 	//ESCRIBE EL TESTO EN PANTALLA

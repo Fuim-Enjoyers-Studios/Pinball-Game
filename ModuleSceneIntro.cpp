@@ -30,6 +30,7 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	trigger_anim.loop = false;
 	trigger_anim.speed = 0.1f;
 
+	ball_anim.PushBack({ 0, 0 * 0, 0, 0 });
 	ball_anim.PushBack({ 0, 24 * 0, 24, 24 });
 	ball_anim.PushBack({ 0, 24 * 1, 24, 24 });
 	ball_anim.PushBack({ 0, 24 * 2, 24, 24 });
@@ -307,13 +308,12 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
 	{
-
+		if (ball_state == DEAD) { ball_anim.SetCurrentFrame(triggerAnimCounter + 1); }
 		if (triggerCounter == 40) {
 			triggerCounter = 0;
 			desiredvel -= 1 * triggerAnimCounter;
 
 			trigger_anim.SetCurrentFrame(triggerAnimCounter);
-			if (ball_state == DEAD) { ball_anim.SetCurrentFrame(triggerAnimCounter); }
 			if (triggerAnimCounter < 4) {
 				++triggerAnimCounter;
 			}

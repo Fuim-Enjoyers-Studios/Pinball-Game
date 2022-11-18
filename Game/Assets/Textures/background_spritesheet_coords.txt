@@ -1,0 +1,9 @@
+// Pivot 1399901512, 1460496789
+int background_spritesheet[2] = {
+	-2147483648, -2147483648
+};
+
+// Pivot 583292.312500, 1825621.000000
+float background_spritesheet[2] = {
+	-894784.875000f, -2684354.500000f
+};

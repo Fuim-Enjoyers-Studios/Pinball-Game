@@ -47,6 +47,7 @@ public:
 	PhysBody* sensorStart;
 	PhysBody* startBloquer;
 	PhysBody* pinball;
+	PhysBody* star_destroyer_background;
 	PhysBody* planet1;
 	PhysBody* planet2;
 	PhysBody* planet3;
@@ -106,7 +107,30 @@ public:
 		98, 50,
 		87, 70
 	};
-	
+
+	// Pivot 0, 0
+	int star_destroyer_Background[38] = {
+		326, 390,
+		357, 381,
+		379, 371,
+		401, 367,
+		437, 360,
+		476, 356,
+		488, 348,
+		496, 353,
+		512, 354,
+		520, 364,
+		511, 372,
+		494, 377,
+		466, 381,
+		444, 386,
+		418, 390,
+		391, 394,
+		361, 398,
+		344, 399,
+		326, 398,
+	};
+
 
 	// Pivot 0, 0
 	int pinballHitbox[52] = {

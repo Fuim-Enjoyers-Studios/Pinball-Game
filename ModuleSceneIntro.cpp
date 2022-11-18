@@ -113,6 +113,14 @@ bool ModuleSceneIntro::Start()
 	pinball->body->SetActive(true);
 	pinball->ctype = ColliderType::WALL;
 
+	if (star_destroyer_background == nullptr)
+	{
+		star_destroyer_background = App->physics->CreateChain(0, 0, star_destroyer_Background, 38, true);
+	}
+	star_destroyer_background->body->SetAwake(true);
+	star_destroyer_background->body->SetActive(true);
+	star_destroyer_background->ctype = ColliderType::BOING;
+
 	//creation of the planet earth collider
 	if (planet1 == nullptr) {
 		planet1 = App->physics->CreateCircle(125, 322, 50);
@@ -306,7 +314,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(collision_layout, 0, 0);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && sensorstart == false)
 	{
 		if (ball_state == DEAD) { ball_anim.SetCurrentFrame(triggerAnimCounter + 1); }
 		if (triggerCounter == 40) {

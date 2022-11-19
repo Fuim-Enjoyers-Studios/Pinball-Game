@@ -9,6 +9,8 @@
 #include "ModuleFonts.h"
 #include "ModuleFadeToBlack.h"
 
+
+
 #define DEAD 0
 #define ALIVE 1
 
@@ -260,6 +262,7 @@ bool ModuleSceneIntro::CleanUp()
 
 	canDebugMode = false;
 	lastScore = score;
+	die = true;
 
 	return true;
 }
@@ -433,9 +436,17 @@ update_status ModuleSceneIntro::Update()
 
 
 	//ESCRIBE EL TESTO EN PANTALLA
-	App->fonts->BlitText(600, 248, scoreFont, "score");
-	App->fonts->BlitText(600, 248, scoreFont, "highscore");
-	App->fonts->BlitText(600, 248, scoreFont, "lastscore");
+	sprintf_s(scoreText,10, "%7d", score);
+	App->fonts->BlitText(700, 28, scoreFont, "score");
+	App->fonts->BlitText(665, 48, scoreFont, scoreText);
+
+	sprintf_s(highScoreText, 10, "%7d", highScore);
+	App->fonts->BlitText(625, 68, scoreFont, "highscore");
+	App->fonts->BlitText(665, 88, scoreFont, highScoreText);
+
+	sprintf_s(lastScoreText, 10, "%7d", lastScore);
+	App->fonts->BlitText(625, 108, scoreFont, "lastscore");
+	App->fonts->BlitText(665, 128, scoreFont, lastScoreText);
 
   
 	//CURSOR

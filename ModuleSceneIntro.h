@@ -6,6 +6,8 @@
 #include "Animation.h"
 #include "SString.h"
 
+#include <stdio.h>
+
 class PhysBody;
 class b2RevoluteJoint;
 enum class ColliderType;
@@ -88,6 +90,9 @@ public:
 	int score, combo;
 	ColliderType lastCollider;
 	int lastScore = 0, highScore = 0;
+	char scoreText[10] = { "\0" };
+	char highScoreText[10] = { "\0" };
+	char lastScoreText[10] = { "\0" };
 
 	bool printLayouts = false;
 

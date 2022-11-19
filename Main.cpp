@@ -14,19 +14,27 @@ enum main_states
 	MAIN_FINISH,
 	MAIN_EXIT
 };
+int FPS = 60;
+
+void capFramerate(Uint32 startingTick)
+{
+	if ((1000 / FPS) > SDL_GetTicks() - startingTick)
+	{
+		SDL_Delay(1000 / FPS - (SDL_GetTicks() - startingTick));
+	}
+}
 
 int main(int argc, char ** argv)
 {
 	LOG("Starting game '%s'...", TITLE);
-
+	Uint32 startingTick;
 	int main_return = EXIT_FAILURE;
 	main_states state = MAIN_CREATION;
 	Application* App = NULL;
 
 	while (state != MAIN_EXIT)
 	{
-		//DELAY 60 fps
-		SDL_Delay((int)(1000 / 60));
+		startingTick = SDL_GetTicks();
 
 		switch (state)
 		{
@@ -81,7 +89,10 @@ int main(int argc, char ** argv)
 			state = MAIN_EXIT;
 
 			break;
-
+		}
+		if (state == MAIN_UPDATE)
+		{
+			capFramerate(startingTick);
 		}
 	}
 

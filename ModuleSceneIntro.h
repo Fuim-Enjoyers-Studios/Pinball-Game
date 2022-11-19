@@ -8,6 +8,7 @@
 
 class PhysBody;
 class b2RevoluteJoint;
+enum class ColliderType;
 
 class SceneElement
 {
@@ -83,6 +84,10 @@ public:
 
 	int flipperx, flippery;
 	int flipper2x, flipper2y;
+	
+	int score, combo;
+	ColliderType lastCollider;
+	int lastScore = 0, highScore = 0;
 
 	bool printLayouts = false;
 

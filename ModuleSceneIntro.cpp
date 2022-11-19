@@ -220,6 +220,10 @@ bool ModuleSceneIntro::Start()
 
 	canDebugMode = true;
 
+	score = 0;
+	combo = 0;
+	if (lastScore > highScore) highScore = lastScore;
+
 	return ret;
 }
 
@@ -255,6 +259,7 @@ bool ModuleSceneIntro::CleanUp()
 	}
 
 	canDebugMode = false;
+	lastScore = score;
 
 	return true;
 }
@@ -428,7 +433,10 @@ update_status ModuleSceneIntro::Update()
 
 
 	//ESCRIBE EL TESTO EN PANTALLA
-	App->fonts->BlitText(600, 248, scoreFont, "Tu MAMA LA MAMA");
+	App->fonts->BlitText(600, 248, scoreFont, "score");
+	App->fonts->BlitText(600, 248, scoreFont, "highscore");
+	App->fonts->BlitText(600, 248, scoreFont, "lastscore");
+
   
 	//CURSOR
 	SDL_ShowCursor(false);
@@ -446,23 +454,39 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		switch (bodyB->ctype)
 		{
 		case ColliderType::BALL:
+
+			lastCollider = ColliderType::BALL;
 			break;
 		case ColliderType::WALL:
 			//App->audio->PlayFx(bonus_fx);
+
+			lastCollider = ColliderType::WALL;
 			break;
 		case ColliderType::BOING:
 			App->audio->PlayFx(boing_fx);
-
+			if (lastCollider == ColliderType::BOING) combo++;
+			else
+			{
+				combo = 0;
+				combo++;
+			}
+			score += combo * 100;
 
 			//BIGGER THE BOINGER, BIGGER THE BOING
 			bodyA->body->SetLinearVelocity(b2Vec2(5 + bodyB->width * 0.1, 5 + bodyB->width * 0.1));
+
+			lastCollider = ColliderType::BOING;
 			break;
 		case ColliderType::DEATH:
 			die = true;
 			bodyA->body->SetLinearVelocity(b2Vec2(0, 0));
+
+			lastCollider = ColliderType::DEATH;
 			break;
 		case ColliderType::SENSORSTART:
 			sensorstart = true;
+
+			lastCollider = ColliderType::SENSORSTART;
 			break;
 		}
 	}

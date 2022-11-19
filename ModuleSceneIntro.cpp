@@ -48,8 +48,6 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-
-
 	//shows normal
 	//SDL_ShowCursor(true);
 
@@ -113,13 +111,15 @@ bool ModuleSceneIntro::Start()
 	pinball->body->SetActive(true);
 	pinball->ctype = ColliderType::WALL;
 
-	if (star_destroyer_background == nullptr)
+	if (spaceShip == nullptr)
 	{
-		star_destroyer_background = App->physics->CreateChain(0, 0, star_destroyer_Background, 38, true);
+		spaceShip = App->physics->CreateRectangle(425, 380, 200, 20);
+		spaceShip->SetPosition(425, 380, -10);
+		spaceShip->body->SetType(b2BodyType::b2_staticBody);
 	}
-	star_destroyer_background->body->SetAwake(true);
-	star_destroyer_background->body->SetActive(true);
-	star_destroyer_background->ctype = ColliderType::BOING;
+	spaceShip->body->SetAwake(true);
+	spaceShip->body->SetActive(true);
+	spaceShip->ctype = ColliderType::WALL;
 
 	//creation of the planet earth collider
 	if (planet1 == nullptr) {
@@ -188,39 +188,37 @@ bool ModuleSceneIntro::Start()
 	Ball->listener = this;
 
 	//FLIPPERS
-	flipper = App->physics->CreateRectangle(320, 583, 84, 15);
-	staticPin = App->physics->CreateRectangle(355, 581, 2, 2);
-	flipper->body->SetType(b2BodyType::b2_dynamicBody);
-	staticPin->body->SetType(b2BodyType::b2_staticBody);
-	flipper->ctype = ColliderType::WALL;
+	if (joint == nullptr) {
+		flipper = App->physics->CreateRectangle(320, 583, 84, 15);
+		staticPin = App->physics->CreateRectangle(355, 581, 2, 2);
+		flipper->body->SetType(b2BodyType::b2_dynamicBody);
+		staticPin->body->SetType(b2BodyType::b2_staticBody);
+		flipper->ctype = ColliderType::WALL;
 
-	
-
-
-
-	joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 578);
+		joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 578);
+	}
 
 	joint->SetLimits(-50 * DEGTORAD, 15 * DEGTORAD);
 	joint->SetMotorSpeed(20);
 	joint->SetMaxMotorTorque(20);
 	joint->EnableLimit(true);
 
+	if (joint2 == nullptr) { 
+		flipper2 = App->physics->CreateRectangle(186, 583, 84, 15);
+		staticPin2 = App->physics->CreateRectangle(150, 578, 2, 2);
+		flipper2->body->SetType(b2BodyType::b2_dynamicBody);
+		staticPin2->body->SetType(b2BodyType::b2_staticBody);
+		flipper2->ctype = ColliderType::WALL;
 
-	flipper2 = App->physics->CreateRectangle(186, 583, 84, 15);
-	staticPin2 = App->physics->CreateRectangle(150, 578, 2, 2);
-	flipper2->body->SetType(b2BodyType::b2_dynamicBody);
-	staticPin2->body->SetType(b2BodyType::b2_staticBody);
-	flipper2->ctype = ColliderType::WALL;
-
-	joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 578);
+		joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 578);
+	}
 
 	joint2->SetLimits(-15 * DEGTORAD, 50 * DEGTORAD);
 	joint2->SetMotorSpeed(20);
 	joint2->SetMaxMotorTorque(20);
 	joint2->EnableLimit(true);
 
-
-
+	canDebugMode = true;
 
 	return ret;
 }
@@ -232,6 +230,13 @@ bool ModuleSceneIntro::CleanUp()
 	App->textures->Unload(ball);
 	App->textures->Unload(background);
 	App->textures->Unload(cursorTexture);
+	App->textures->Unload(collision_layout);
+	App->textures->Unload(framework);
+	App->textures->Unload(scoreBoard);
+	App->textures->Unload(trigger);
+	App->textures->Unload(rightFlipperTexture);
+	App->textures->Unload(leftFlipperTexture);
+
 	App->fonts->UnLoad(scoreFont);
 	circles.clear();
 	trigger_anim.Reset();
@@ -247,8 +252,9 @@ bool ModuleSceneIntro::CleanUp()
 		pinball->body->SetActive(false);
 		sensor->body->SetActive(false);
 		Ball->body->SetActive(false);
-
 	}
+
+	canDebugMode = false;
 
 	return true;
 }
@@ -272,12 +278,10 @@ update_status ModuleSceneIntro::Update()
 		startBloquer->SetPosition(527, 94);
 	}
 
-
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE))
 	{
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
 	}
-
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
@@ -288,7 +292,6 @@ update_status ModuleSceneIntro::Update()
 		flipper2->body->SetAngularVelocity(1000 * DEGTORAD);
 	}
 
-
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		flipper->body->SetAngularVelocity(1000 * DEGTORAD);
@@ -297,9 +300,6 @@ update_status ModuleSceneIntro::Update()
 	{
 		flipper->body->SetAngularVelocity(1000 * DEGTORAD * -1);
 	}
-
-
-
 
 	if (App->input->GetKey(SDL_SCANCODE_TAB) == KEY_DOWN)
 	{
@@ -433,8 +433,6 @@ update_status ModuleSceneIntro::Update()
 	//CURSOR
 	SDL_ShowCursor(false);
 	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
-
-
 
 	return UPDATE_CONTINUE;
 }

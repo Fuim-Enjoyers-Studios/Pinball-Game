@@ -133,10 +133,14 @@ public:
 
 	uint bonus_fx;
 	uint boing_fx;
+	uint boing2_fx;
 	uint charge_fx;
 	uint launch_fx;
 	uint damage_fx;
 	uint death_fx;
+	uint hit_fx;
+	uint travel1_fx;
+	uint travel2_fx;
 	p2Point<int> ray;
 	bool ray_on;
 	float desiredvel;
@@ -145,7 +149,7 @@ public:
 	float boingForce = 4.0f;
 
 
-	int forcetimer;
+	int timer;
 
 	// Pivot 0, 0
 	int star_destroyer[8] = {

@@ -79,18 +79,22 @@ bool ModuleSceneIntro::Start()
 	explosion = App->textures->Load("Assets/Textures/explosion.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
-	boing_fx = App->audio->LoadFx("Assets/Audio/planet_collision2.wav");
+	boing_fx = App->audio->LoadFx("Assets/Audio/planet_collision1.wav");
+	boing2_fx = App->audio->LoadFx("Assets/Audio/planet_collision2.wav");
 	charge_fx = App->audio->LoadFx("Assets/Audio/ray_charge.wav");
 	launch_fx = App->audio->LoadFx("Assets/Audio/laserball_launch.wav");
 	damage_fx = App->audio->LoadFx("Assets/Audio/death_star_explosion.wav");
 	death_fx = App->audio->LoadFx("Assets/Audio/death_star_megaexplosion.wav");
+	hit_fx = App->audio->LoadFx("Assets/Audio/hard_hit.wav");
+	travel1_fx = App->audio->LoadFx("Assets/Audio/spaceship_travel.wav");
+	travel2_fx = App->audio->LoadFx("Assets/Audio/spaceship_travel2.wav");
 
 
 	//LOADS FONTS
 	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
 	scoreFont = App->fonts->Load("Assets/Fonts/yellowStarWarsFont.png", lookupTable, 1);
 
-	forcetimer = 0;
+	timer = 0;
 	desiredvel = -1;
 
 
@@ -649,6 +653,8 @@ update_status ModuleSceneIntro::Update()
 		circles.clear();
 
 	}
+	timer++;
+	if (timer > 60) timer = 0;
 
 	return UPDATE_CONTINUE;
 }
@@ -672,7 +678,19 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			lastCollider = ColliderType::WALL;
 			break;
 		case ColliderType::BOING:
-			App->audio->PlayFx(boing_fx);
+			switch (timer % 3)
+			{
+			case 0:
+				App->audio->PlayFx(boing_fx);
+				break;
+			case 1:
+				App->audio->PlayFx(boing2_fx);
+				break;
+			case 2:
+				App->audio->PlayFx(hit_fx);
+				break;
+			}
+			
 			if (lastCollider == ColliderType::BOING) combo++;
 			else
 			{
@@ -714,8 +732,9 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		case ColliderType::ENEMY:
 			enemy_active = false;
 			enemy_counter = 120;
-
-			lastCollider = ColliderType::ENEMY;
+			score *= combo;
+			App->audio->PlayFx(hit_fx);
+			App->audio->PlayFx(damage_fx);
 			break;
 		}
 	}
@@ -735,6 +754,17 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 void ModuleSceneIntro::CreateEnemy() {
 	srand(time(NULL));
+
+	switch (timer % 2)
+	{
+	case 0:
+		App->audio->PlayFx(travel1_fx);
+		break;
+	case 1:
+		App->audio->PlayFx(travel2_fx);
+		break;
+	}
+	
 
 	bool enemy_direction = true;
 	b2Vec2 speed;

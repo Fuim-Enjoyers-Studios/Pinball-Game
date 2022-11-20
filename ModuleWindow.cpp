@@ -1,6 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleWindow.h"
+#include "SDL_image/include/SDL_image.h"
 
 ModuleWindow::ModuleWindow(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -62,10 +63,18 @@ bool ModuleWindow::Init()
 		{
 			//Get window surface
 			screen_surface = SDL_GetWindowSurface(window);
+			SetIcon("Assets/Textures/icon.png");
 		}
 	}
 
 	return ret;
+}
+
+// Set new window title
+void ModuleWindow::SetIcon(const char* new_icon)
+{
+	SDL_Surface* surface = IMG_Load(new_icon);
+	SDL_SetWindowIcon(window, surface);
 }
 
 // Called before quitting

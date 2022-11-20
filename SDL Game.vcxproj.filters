@@ -75,6 +75,7 @@
     <ClInclude Include="SString.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModulePlayer.cpp">
@@ -119,5 +120,11 @@
     <ClCompile Include="ModuleFonts.cpp">
       <Filter>Source Files\Core</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Pinball Game.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Game\Assets\Textures\icon.ico" />
   </ItemGroup>
 </Project>

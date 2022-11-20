@@ -20,6 +20,9 @@ public:
 
 	void SetTitle(const char* title);
 
+	//change icon
+	void SetIcon(const char* new_icon);
+
 public:
 	//The window we'll be rendering to
 	SDL_Window* window;

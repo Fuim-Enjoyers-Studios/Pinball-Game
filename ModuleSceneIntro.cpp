@@ -66,7 +66,10 @@ bool ModuleSceneIntro::Start()
 	leftFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer_left.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
-	boing_fx = App->audio->LoadFx("Assets/Audio/boingSound.wav");
+	boing_fx = App->audio->LoadFx("Assets/Audio/planet_collision2.wav");
+	charge_fx = App->audio->LoadFx("Assets/Audio/ray_charge.wav");
+	launch_fx = App->audio->LoadFx("Assets/Audio/laserball_launch.wav");
+	damage_fx = App->audio->LoadFx("Assets/Audio/death_star_megaexplosion.wav");
 
 	//LOADS FONTS
 	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
@@ -332,6 +335,7 @@ update_status ModuleSceneIntro::Update()
 			trigger_anim.SetCurrentFrame(triggerAnimCounter);
 			if (triggerAnimCounter < 4) {
 				++triggerAnimCounter;
+				App->audio->PlayFx(charge_fx);
 			}
 			
 	
@@ -352,6 +356,7 @@ update_status ModuleSceneIntro::Update()
 			Ball->body->ApplyLinearImpulse(BallInitVelocity, Ball->body->GetWorldCenter(), true);
 			b2Vec2 temp = Ball->body->GetLinearVelocity();
 			if (temp.y < 0) { ball_state = ALIVE; }
+			App->audio->PlayFx(launch_fx);
 		}
 
 
@@ -491,6 +496,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		case ColliderType::DEATH:
 			die = true;
 			bodyA->body->SetLinearVelocity(b2Vec2(0, 0));
+			App->audio->PlayFx(damage_fx);
 
 			lastCollider = ColliderType::DEATH;
 			break;

@@ -105,6 +105,9 @@ public:
 
 	uint bonus_fx;
 	uint boing_fx;
+	uint charge_fx;
+	uint launch_fx;
+	uint damage_fx;
 	p2Point<int> ray;
 	bool ray_on;
 	float desiredvel;

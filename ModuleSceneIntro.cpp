@@ -144,7 +144,7 @@ bool ModuleSceneIntro::Start()
 	}
 	spaceShip->body->SetAwake(true);
 	spaceShip->body->SetActive(true);
-	spaceShip->ctype = ColliderType::WALL;
+	spaceShip->ctype = ColliderType::NOTBOING;
 
 	//creation of the planet earth collider
 	if (planet1 == nullptr) {
@@ -224,8 +224,8 @@ bool ModuleSceneIntro::Start()
 		staticPin = App->physics->CreateRectangle(355, 590, 1, 1);
 		flipper->body->SetType(b2BodyType::b2_dynamicBody);
 		staticPin->body->SetType(b2BodyType::b2_staticBody);
-		flipper->ctype = ColliderType::WALL;
-		staticPin->ctype = ColliderType::WALL;
+		flipper->ctype = ColliderType::NOTBOING;
+		staticPin->ctype = ColliderType::NOTBOING;
 
 		joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 590);
 	}
@@ -240,8 +240,8 @@ bool ModuleSceneIntro::Start()
 		staticPin2 = App->physics->CreateRectangle(150, 590, 1, 1);
 		flipper2->body->SetType(b2BodyType::b2_dynamicBody);
 		staticPin2->body->SetType(b2BodyType::b2_staticBody);
-		flipper2->ctype = ColliderType::WALL;
-		staticPin2->ctype = ColliderType::WALL;
+		flipper2->ctype = ColliderType::NOTBOING;
+		staticPin2->ctype = ColliderType::NOTBOING;
 
 		joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 590);
 	}
@@ -259,6 +259,8 @@ bool ModuleSceneIntro::Start()
 
 	life = 3;
 	isDead = false;
+
+	App->audio->PlayMusic("Assets/Audio/Star_Wars_Theme.ogg");
 
 	return ret;
 }
@@ -301,6 +303,8 @@ bool ModuleSceneIntro::CleanUp()
 	canDebugMode = false;
 	lastScore = score;
 	die = true;
+
+	App->audio->PlayMusic("");
 
 	return true;
 }
@@ -579,6 +583,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(mini_explosion, (METERS_TO_PIXELS(enemy->body->GetPosition().x)) - enemy->width, METERS_TO_PIXELS(enemy->body->GetPosition().y) - enemy->height);
 	}
 
+	if (score > 9999999) { score = 9999999; }
 
 	//ESCRIBE EL TESTO EN PANTALLA
 	sprintf_s(scoreText,10, "%7d", score);
@@ -748,6 +753,23 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			
 
 			lastCollider = ColliderType::ENEMY;
+			break;
+		case ColliderType::NOTBOING:
+			switch (timer % 3)
+			{
+			case 0:
+				App->audio->PlayFx(boing_fx);
+				break;
+			case 1:
+				App->audio->PlayFx(boing2_fx);
+				break;
+			case 2:
+				App->audio->PlayFx(hit_fx);
+				break;
+			}
+
+
+			lastCollider = ColliderType::WALL;
 			break;
 		}
 	}

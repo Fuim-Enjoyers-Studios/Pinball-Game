@@ -83,6 +83,7 @@ public:
 	SDL_Texture* cursorTexture = nullptr;
 	SDL_Texture* rightFlipperTexture = nullptr;
 	SDL_Texture* leftFlipperTexture = nullptr;
+	SDL_Texture* explosion;
 
 	int flipperx, flippery;
 	int flipper2x, flipper2y;
@@ -93,6 +94,8 @@ public:
 	char scoreText[10] = { "\0" };
 	char highScoreText[10] = { "\0" };
 	char lastScoreText[10] = { "\0" };
+	int life;
+	bool isDead = false;
 
 	//FPS STUFF TO BLIT
 	char FPStext[3] = { "\0" };
@@ -111,6 +114,7 @@ public:
 	uint charge_fx;
 	uint launch_fx;
 	uint damage_fx;
+	uint death_fx;
 	p2Point<int> ray;
 	bool ray_on;
 	float desiredvel;

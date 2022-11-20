@@ -64,12 +64,15 @@ bool ModuleSceneIntro::Start()
 	trigger = App->textures->Load("Assets/Textures/trigger.png");
 	rightFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer.png");
 	leftFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer_left.png");
+	explosion = App->textures->Load("Assets/Textures/explosion.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 	boing_fx = App->audio->LoadFx("Assets/Audio/planet_collision2.wav");
 	charge_fx = App->audio->LoadFx("Assets/Audio/ray_charge.wav");
 	launch_fx = App->audio->LoadFx("Assets/Audio/laserball_launch.wav");
-	damage_fx = App->audio->LoadFx("Assets/Audio/death_star_megaexplosion.wav");
+	damage_fx = App->audio->LoadFx("Assets/Audio/death_star_explosion.wav");
+	death_fx = App->audio->LoadFx("Assets/Audio/death_star_megaexplosion.wav");
+
 
 	//LOADS FONTS
 	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
@@ -228,6 +231,9 @@ bool ModuleSceneIntro::Start()
 	score = 0;
 	combo = 0;
 	if (lastScore > highScore) highScore = lastScore;
+
+	life = 3;
+	isDead = false;
 
 	return ret;
 }
@@ -432,6 +438,21 @@ update_status ModuleSceneIntro::Update()
 	Ball->GetPosition(x, y);
 	App->renderer->Blit(ball, x, y, &r, 1.0f, Ball->GetRotation());
 
+	if (life < 3)
+	{
+		App->renderer->Blit(explosion, -200, 600);
+	}
+	if (life < 2)
+	{
+		App->renderer->Blit(explosion, 100, 600);
+	}
+	if (life < 1)
+	{
+		App->renderer->Blit(explosion, -100, 500);
+		//App->audio->PlayFx(death_fx);
+		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
+	}
+
 	//LAYOUTS PRINTING
 	if (printLayouts) {
 		App->renderer->Blit(framework, 0, 0);
@@ -524,7 +545,18 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		case ColliderType::DEATH:
 			die = true;
 			bodyA->body->SetLinearVelocity(b2Vec2(0, 0));
-			App->audio->PlayFx(damage_fx);
+			
+
+			life--;
+			if (life <= 0)
+			{
+				isDead = true;
+				App->audio->PlayFx(death_fx);
+			}
+			else
+			{
+				App->audio->PlayFx(damage_fx);
+			}
 
 			lastCollider = ColliderType::DEATH;
 			break;

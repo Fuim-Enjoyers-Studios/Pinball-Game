@@ -507,9 +507,9 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				combo++;
 			}
 			score += combo * 100;
-
+			b2Vec2 vec = bodyB->body->GetPosition();
 			//BIGGER THE BOINGER, BIGGER THE BOING
-			bodyA->body->SetLinearVelocity(b2Vec2(5 + bodyB->width * 0.1, 5 + bodyB->width * 0.1));
+			bodyA->body->SetLinearVelocity(vec);
 
 			lastCollider = ColliderType::BOING;
 			break;

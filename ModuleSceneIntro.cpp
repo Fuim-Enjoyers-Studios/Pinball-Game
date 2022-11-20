@@ -488,6 +488,7 @@ update_status ModuleSceneIntro::Update()
 
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
+	b2Vec2 vec;
 	int x, y;
 
 	if (bodyA->ctype == ColliderType::BALL)
@@ -512,9 +513,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				combo++;
 			}
 			score += combo * 100;
-			b2Vec2 vec = bodyB->body->GetPosition();
+			vec = bodyA->body->GetPosition() - bodyB->body->GetPosition();
+			vec = b2Vec2(	(bodyA->body->GetPosition().x - bodyB->body->GetPosition().x) * 4,
+							(bodyA->body->GetPosition().y - bodyB->body->GetPosition().y) * 4);
 			//BIGGER THE BOINGER, BIGGER THE BOING
-			bodyA->body->SetLinearVelocity(vec);
+			bodyA->body->ApplyLinearImpulse(vec, bodyA->body->GetPosition(), true);
 
 			lastCollider = ColliderType::BOING;
 			break;

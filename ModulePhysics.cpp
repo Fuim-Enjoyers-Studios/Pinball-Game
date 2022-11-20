@@ -43,20 +43,37 @@ bool ModulePhysics::Start()
 // 
 update_status ModulePhysics::PreUpdate()
 {
-	world->Step(1.0f / 60.0f, 6, 2);
-
-	for(b2Contact* c = world->GetContactList(); c; c = c->GetNext())
+	if (!pause)
 	{
-		if(c->GetFixtureA()->IsSensor() && c->IsTouching())
+		world->Step(1.0f / 60.0f, 6, 2);
+
+		for (b2Contact* c = world->GetContactList(); c; c = c->GetNext())
 		{
-			PhysBody* pb1 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
-			PhysBody* pb2 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
-			if(pb1 && pb2 && pb1->listener)
-				pb1->listener->OnCollision(pb1, pb2);
+			if (c->GetFixtureA()->IsSensor() && c->IsTouching())
+			{
+				PhysBody* pb1 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
+				PhysBody* pb2 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData();
+				if (pb1 && pb2 && pb1->listener)
+					pb1->listener->OnCollision(pb1, pb2);
+			}
 		}
 	}
 
 	return UPDATE_CONTINUE;
+}
+
+update_status ModulePhysics::Update()
+{
+	if (App->input->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
+	{
+		Pause();
+	}
+	return update_status::UPDATE_CONTINUE;
+}
+
+void ModulePhysics::Pause()
+{
+	pause = !pause;
 }
 
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)

@@ -51,6 +51,7 @@ public:
 
 	bool Start();
 	update_status PreUpdate();
+	update_status Update();
 	update_status PostUpdate();
 	bool CleanUp();
 
@@ -62,11 +63,17 @@ public:
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
 
+	void Pause();
+
+	bool const GetPause() { return pause; }
+
 	b2RevoluteJoint* CreateRevoluteJoint(PhysBody* pBody1, PhysBody* pBody2, float widht, float height);
 
 private:
 
 	bool debug;
+	bool pause = false;
+
 	b2World* world;
 	b2MouseJoint* mouse_joint;
 	b2Body* mouse_body = nullptr;

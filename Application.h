@@ -44,6 +44,8 @@ public:
 	update_status Update();
 	bool CleanUp();
 
+	int FPS = 60;
+
 private:
 
 	void AddModule(Module* mod);

@@ -94,6 +94,9 @@ public:
 	char highScoreText[10] = { "\0" };
 	char lastScoreText[10] = { "\0" };
 
+	//FPS STUFF TO BLIT
+	char FPStext[3] = { "\0" };
+
 	bool printLayouts = false;
 
 	Animation background_anim;

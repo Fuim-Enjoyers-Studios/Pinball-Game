@@ -77,11 +77,11 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "FIUM Enjoyers"
-            VALUE "FileDescription", "StarWars Pinball by FIUM Enjoyers"
+            VALUE "CompanyName", "Fuim Enjoyers"
+            VALUE "FileDescription", "StarWars Pinball by Fuim Enjoyers"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "Pinball Game.exe"
-            VALUE "LegalCopyright", "Copyright (C) 2022 FIUM Enjoyers"
+            VALUE "LegalCopyright", "Copyright (C) 2022 Fuim Enjoyers"
             VALUE "OriginalFilename", "Pinball Game.exe"
             VALUE "ProductName", "StarWarsPinball"
             VALUE "ProductVersion", "1.0.0.1"

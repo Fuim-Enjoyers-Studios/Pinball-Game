@@ -546,7 +546,14 @@ update_status ModuleSceneIntro::Update()
 
 	sprintf_s(comboText, 10, "%7d", combo);
 	App->fonts->BlitText(700, 148, scoreFont, "combo");
-	App->fonts->BlitText(760, 168, scoreFont, "x");
+	if (combo > 9)
+	{
+		App->fonts->BlitText(740, 168, scoreFont, "x");
+	}
+	else
+	{
+		App->fonts->BlitText(760, 168, scoreFont, "x");
+	}
 	App->fonts->BlitText(665, 168, scoreFont, comboText);
 
 	if (App->physics->debug)

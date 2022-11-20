@@ -10,7 +10,8 @@
 #include "ModuleFadeToBlack.h"
 #include "p2List.h"
 
-
+#include <ctime>
+#include <cstdlib>
 
 #define DEAD 0
 #define ALIVE 1
@@ -40,6 +41,15 @@ ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Modul
 	ball_anim.PushBack({ 0, 24 * 3, 24, 24 });
 	ball_anim.PushBack({ 0, 24 * 4, 24, 24 });
 	ball_anim.loop = false;
+
+	enemys_anim.PushBack({ 0 * 0, 0, 0, 0 });
+	enemys_anim.PushBack({ 60 * 0, 0, 60, 60 });
+	enemys_anim.PushBack({ 60 * 1, 0, 60, 60 });
+	enemys_anim.PushBack({ 60 * 2, 0, 60, 60 });
+	enemys_anim.PushBack({ 60 * 3, 0, 60, 60 });
+	enemys_anim.PushBack({ 60 * 4, 0, 60, 60 });
+	enemys_anim.PushBack({ 60 * 5, 0, 60, 60 });
+	enemys_anim.loop = false;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -65,6 +75,7 @@ bool ModuleSceneIntro::Start()
 	trigger = App->textures->Load("Assets/Textures/trigger.png");
 	rightFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer.png");
 	leftFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer_left.png");
+	enemys = App->textures->Load("Assets/Textures/enemys.png");
 	explosion = App->textures->Load("Assets/Textures/explosion.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
@@ -196,6 +207,12 @@ bool ModuleSceneIntro::Start()
 	Ball->ctype = ColliderType::BALL;
 	Ball->listener = this;
 
+	if (enemy == nullptr)
+	{
+		enemy = App->physics->CreateRectangleSensor(-100, 420, 60, 30);
+		enemy->body->SetType(b2BodyType::b2_kinematicBody);
+	}
+
 	//FLIPPERS
 	if (joint == nullptr) {
 		flipper = App->physics->CreateRectangle(320, 583, 84, 15);
@@ -254,10 +271,12 @@ bool ModuleSceneIntro::CleanUp()
 	App->textures->Unload(trigger);
 	App->textures->Unload(rightFlipperTexture);
 	App->textures->Unload(leftFlipperTexture);
+	App->textures->Unload(enemys);
 
 	App->fonts->UnLoad(scoreFont);
 	circles.clear();
 	trigger_anim.Reset();
+	enemys_anim.Reset();
 
 	//deactivates the fixtures in order to dont have collisions anymore
 	if (pinball != nullptr) {
@@ -270,6 +289,8 @@ bool ModuleSceneIntro::CleanUp()
 		pinball->body->SetActive(false);
 		sensor->body->SetActive(false);
 		Ball->body->SetActive(false);
+		enemy->body->SetLinearVelocity(b2Vec2(0.0f, 0.0f));
+		enemy->body->SetActive(false);
 	}
 
 	canDebugMode = false;
@@ -401,8 +422,26 @@ update_status ModuleSceneIntro::Update()
 		printLayouts = !printLayouts;
 	}
 
+	if (enemy_counter != 0) { enemy_counter--; }
+
+	if (!enemy_active && enemy_counter == 0) { CreateEnemy(); }
+
+	int enemy_x, enemy_y;
+	enemy->GetPosition(enemy_x, enemy_y);
+	if ((enemy_x > 900 || enemy_x < -100) && enemy_active) {
+		enemy_counter = 120;
+		enemy_active = false;
+	}
+
 	SDL_Rect r = background_anim.GetCurrentFrame();
 	App->renderer->Blit(background, 0, 0, &r);
+
+	if (enemy_active) {
+		r = enemys_anim.GetCurrentFrame();
+		int x, y;
+		enemy->GetPosition(x, y);
+		App->renderer->Blit(enemys, x+30, y, &r, 1.0f);
+	}
 
 	//LAYOUTS PRINTING
 	if (printLayouts) {
@@ -491,7 +530,7 @@ update_status ModuleSceneIntro::Update()
 		if (normal.x != 0.0f)
 			App->renderer->DrawLine(ray.x + destination.x, ray.y + destination.y, ray.x + destination.x + normal.x * 25.0f, ray.y + destination.y + normal.y * 25.0f, 100, 255, 100);
 	}
-  
+
 	r = ball_anim.GetCurrentFrame();
 	int x, y;
 	Ball->GetPosition(x, y);
@@ -672,6 +711,12 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 			lastCollider = ColliderType::SENSORSTART;
 			break;
+		case ColliderType::ENEMY:
+			enemy_active = false;
+			enemy_counter = 120;
+
+			lastCollider = ColliderType::ENEMY;
+			break;
 		}
 	}
 	/*
@@ -686,4 +731,71 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		bodyB->GetPosition(x, y);
 		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
 	}*/
+}
+
+void ModuleSceneIntro::CreateEnemy() {
+	srand(time(NULL));
+
+	bool enemy_direction = true;
+	b2Vec2 speed;
+
+	int randNum = (rand() % 2) + 1;
+
+	switch (randNum)
+	{
+	case 1:
+		enemy->SetPosition(-20, 420, enemy->GetRotation());
+		speed = b2Vec2(5.0f, 0.0f);
+		enemy->body->SetLinearVelocity(speed);
+		enemy->body->SetAwake(true);
+		enemy->body->SetActive(true);
+		enemy->ctype = ColliderType::ENEMY;
+		enemy_direction = true;
+		break;
+	case 2:
+		enemy->SetPosition(860, 420, enemy->GetRotation());
+		speed = b2Vec2(-5.0f, 0.0f);
+		enemy->body->SetLinearVelocity(speed);
+		enemy->body->SetAwake(true);
+		enemy->body->SetActive(true);
+		enemy->ctype = ColliderType::ENEMY;
+		enemy_direction = false;
+		break;
+	default:
+		break;
+	}
+
+	randNum = (rand() % 3) + 1;
+
+	switch (randNum)
+	{
+	case 1:
+		if(enemy_direction){
+			enemys_anim.SetCurrentFrame(1);
+		}
+		else{
+			enemys_anim.SetCurrentFrame(2);
+		}
+		break;
+	case 2:
+		if (enemy_direction) {
+			enemys_anim.SetCurrentFrame(3);
+		}
+		else {
+			enemys_anim.SetCurrentFrame(4);
+		}
+		break;
+	case 3:
+		if (enemy_direction) {
+			enemys_anim.SetCurrentFrame(5);
+		}
+		else {
+			enemys_anim.SetCurrentFrame(6);
+		}
+		break;
+	default:
+		break;
+	}
+
+	enemy_active = true;
 }

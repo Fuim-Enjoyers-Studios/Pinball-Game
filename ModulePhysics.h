@@ -18,6 +18,7 @@ enum class ColliderType {
 	BOING,
 	DEATH,
 	SENSORSTART,
+	ENEMY,
 	UNKNOWN
 	// ..
 };

@@ -45,6 +45,8 @@ public:
 	bool CleanUp();
 	void OnCollision(PhysBody* bodyA, PhysBody* bodyB);
 
+	void CreateEnemy();
+
 public:
 	int ball_state = 0;
 	bool die = false;
@@ -71,7 +73,7 @@ public:
 	PhysBody* staticPin;
 	PhysBody* flipper2;
 	PhysBody* staticPin2;
-
+	PhysBody* enemy;
 
 	b2RevoluteJoint* joint;
 	b2RevoluteJoint* joint2;
@@ -91,6 +93,7 @@ public:
 	SDL_Texture* trigger;
 	SDL_Texture* collision_layout;
 	SDL_Texture* framework;
+	SDL_Texture* enemys;
 	SDL_Texture* cursorTexture = nullptr;
 	SDL_Texture* rightFlipperTexture = nullptr;
 	SDL_Texture* leftFlipperTexture = nullptr;
@@ -120,9 +123,13 @@ public:
 	Animation background_anim;
 	Animation trigger_anim;
 	Animation ball_anim;
+	Animation enemys_anim;
 
 	int triggerCounter = 0;
 	int triggerAnimCounter = 1;
+
+	int enemy_counter = 20;
+	bool enemy_active = false;
 
 	uint bonus_fx;
 	uint boing_fx;

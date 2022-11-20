@@ -18,7 +18,7 @@ ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app,
 	world = NULL;
 	mouse_joint = NULL;
 	mouse_body = NULL;
-	debug = true;
+	debug = false;
 }
 
 // Destructor
@@ -45,6 +45,7 @@ update_status ModulePhysics::PreUpdate()
 {
 	if (!pause)
 	{
+		world->SetGravity(b2Vec2(GRAVITY_X, -GRAVITY_Y));
 		world->Step(1.0f / 60.0f, 6, 2);
 
 		for (b2Contact* c = world->GetContactList(); c; c = c->GetNext())

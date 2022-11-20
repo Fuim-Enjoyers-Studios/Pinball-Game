@@ -8,6 +8,7 @@
 #include "ModulePhysics.h"
 #include "ModuleFonts.h"
 #include "ModuleFadeToBlack.h"
+#include "p2List.h"
 
 #include <ctime>
 #include <cstdlib>
@@ -75,12 +76,15 @@ bool ModuleSceneIntro::Start()
 	rightFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer.png");
 	leftFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer_left.png");
 	enemys = App->textures->Load("Assets/Textures/enemys.png");
+	explosion = App->textures->Load("Assets/Textures/explosion.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 	boing_fx = App->audio->LoadFx("Assets/Audio/planet_collision2.wav");
 	charge_fx = App->audio->LoadFx("Assets/Audio/ray_charge.wav");
 	launch_fx = App->audio->LoadFx("Assets/Audio/laserball_launch.wav");
-	damage_fx = App->audio->LoadFx("Assets/Audio/death_star_megaexplosion.wav");
+	damage_fx = App->audio->LoadFx("Assets/Audio/death_star_explosion.wav");
+	death_fx = App->audio->LoadFx("Assets/Audio/death_star_megaexplosion.wav");
+
 
 	//LOADS FONTS
 	char lookupTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz9012345678" };
@@ -212,12 +216,13 @@ bool ModuleSceneIntro::Start()
 	//FLIPPERS
 	if (joint == nullptr) {
 		flipper = App->physics->CreateRectangle(320, 583, 84, 15);
-		staticPin = App->physics->CreateRectangle(355, 581, 2, 2);
+		staticPin = App->physics->CreateRectangle(355, 590, 1, 1);
 		flipper->body->SetType(b2BodyType::b2_dynamicBody);
 		staticPin->body->SetType(b2BodyType::b2_staticBody);
 		flipper->ctype = ColliderType::WALL;
+		staticPin->ctype = ColliderType::WALL;
 
-		joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 578);
+		joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 590);
 	}
 
 	joint->SetLimits(-50 * DEGTORAD, 15 * DEGTORAD);
@@ -227,12 +232,13 @@ bool ModuleSceneIntro::Start()
 
 	if (joint2 == nullptr) { 
 		flipper2 = App->physics->CreateRectangle(186, 583, 84, 15);
-		staticPin2 = App->physics->CreateRectangle(150, 578, 2, 2);
+		staticPin2 = App->physics->CreateRectangle(150, 590, 1, 1);
 		flipper2->body->SetType(b2BodyType::b2_dynamicBody);
 		staticPin2->body->SetType(b2BodyType::b2_staticBody);
 		flipper2->ctype = ColliderType::WALL;
+		staticPin2->ctype = ColliderType::WALL;
 
-		joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 578);
+		joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 590);
 	}
 
 	joint2->SetLimits(-15 * DEGTORAD, 50 * DEGTORAD);
@@ -245,6 +251,9 @@ bool ModuleSceneIntro::Start()
 	score = 0;
 	combo = 0;
 	if (lastScore > highScore) highScore = lastScore;
+
+	life = 3;
+	isDead = false;
 
 	return ret;
 }
@@ -316,22 +325,77 @@ update_status ModuleSceneIntro::Update()
 	}
 
 
-
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_STATE::KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_F2))
 	{
--		App->FPS--;
-		if (App->FPS <= 1)
-		{
-			App->FPS = 1;
-		}
+		DebugKeyState = DEBUGKEYSTATE::FPS;
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_STATE::KEY_REPEAT)
+	else if (App->input->GetKey(SDL_SCANCODE_F3))
 	{
-		App->FPS++;
-		if (App->FPS >= 99)
+		DebugKeyState = DEBUGKEYSTATE::GRAVITY;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_F4))
+	{
+		DebugKeyState = DEBUGKEYSTATE::BOINGFORCE;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_STATE::KEY_REPEAT && App->physics->debug)
+	{
+		switch (DebugKeyState)
 		{
-			App->FPS = 99;
+		case DEBUGKEYSTATE::FPS:
+			App->FPS--;
+			if (App->FPS <= 1)
+			{
+				App->FPS = 1;
+			}
+			break;
+		case DEBUGKEYSTATE::GRAVITY:
+			App->physics->GRAVITY_Y++;
+			if (App->physics->GRAVITY_Y >= 0.0f)
+			{
+				App->physics->GRAVITY_Y = 0.0f;
+			}
+			break;
+		case DEBUGKEYSTATE::BOINGFORCE:
+			boingForce -= 0.2;
+			if (boingForce <= 0.2f)
+			{
+				boingForce = 0.2f;
+			}
+			break;
+		default:
+			break;
 		}
+
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_STATE::KEY_REPEAT && App->physics->debug)
+	{
+		switch (DebugKeyState)
+		{
+		case DEBUGKEYSTATE::FPS:
+			App->FPS++;
+			if (App->FPS >= 99)
+			{
+				App->FPS = 99;
+			}
+			break;
+		case DEBUGKEYSTATE::GRAVITY:
+			App->physics->GRAVITY_Y--;
+			if (App->physics->GRAVITY_Y <= -100.0f)
+			{
+				App->physics->GRAVITY_Y = -100.0f;
+			}
+			break;
+		case DEBUGKEYSTATE::BOINGFORCE:
+			boingForce += 0.2;
+			if (boingForce >= 12.0f)
+			{
+				boingForce = 12.0f;
+			}
+			break;
+		default:
+			break;
+		}
+
 	}
 
 
@@ -384,7 +448,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(collision_layout, 0, 0);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && sensorstart == false)
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && sensorstart == false)
 	{
 		if (ball_state == DEAD) { ball_anim.SetCurrentFrame(triggerAnimCounter + 1); }
 		if (triggerCounter == 40) {
@@ -407,7 +471,7 @@ update_status ModuleSceneIntro::Update()
 
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP) {
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
 		b2Vec2 BallInitVelocity = b2Vec2(0.0f, desiredvel);
 		Ball->GetPosition(x, y);
 	
@@ -427,9 +491,10 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12));
-		circles.getLast()->data->listener = this;
-		circles.getLast()->data->ctype = ColliderType::BALL;
+		PhysBody* c1 = App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12);
+		c1->listener = this;
+		c1->ctype = ColliderType::BALL;
+		circles.add(c1);
 	}
 
 	// Prepare for raycast ------------------------------------------------------
@@ -471,22 +536,28 @@ update_status ModuleSceneIntro::Update()
 	Ball->GetPosition(x, y);
 	App->renderer->Blit(ball, x, y, &r, 1.0f, Ball->GetRotation());
 
+	if (life < 3)
+	{
+		App->renderer->Blit(explosion, -200, 600);
+	}
+	if (life < 2)
+	{
+		App->renderer->Blit(explosion, 100, 600);
+	}
+	if (life < 1)
+	{
+		App->renderer->Blit(explosion, -100, 500);
+		//App->audio->PlayFx(death_fx);
+		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
+	}
+
 	//LAYOUTS PRINTING
 	if (printLayouts) {
 		App->renderer->Blit(framework, 0, 0);
 		App->renderer->Blit(scoreBoard, 0, 0);
 	}
   
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN || die)
-	{
-		Ball->SetPosition(546, 563);
-		Ball->body->SetLinearVelocity(b2Vec2(0,0));
-		circles.clear();
-		ball_anim.Reset();
-		ball_state = DEAD;
-		sensorstart = false;
-		die = false;
-	}
+	
 	
 	//illo, aqui imprime el flipper right
 
@@ -496,7 +567,7 @@ update_status ModuleSceneIntro::Update()
 	//illo, aqui imprime el flipper le
 
 	flipper2->GetPosition(flipper2x, flipper2y);
-	App->renderer->Blit(leftFlipperTexture, flipper2x, flipper2y, (SDL_Rect*)0, 1.0f, flipper2->GetRotation(), 45, 2);
+	App->renderer->Blit(leftFlipperTexture, flipper2x, flipper2y, (SDL_Rect*)0, 1.0f, flipper2->GetRotation(), 40, 2);
 
 
 	//ESCRIBE EL TESTO EN PANTALLA
@@ -512,15 +583,72 @@ update_status ModuleSceneIntro::Update()
 	App->fonts->BlitText(625, 108, scoreFont, "lastscore");
 	App->fonts->BlitText(665, 128, scoreFont, lastScoreText);
 
+	sprintf_s(comboText, 10, "%7d", combo);
+	App->fonts->BlitText(700, 148, scoreFont, "combo");
+	if (combo > 9)
+	{
+		App->fonts->BlitText(740, 168, scoreFont, "x");
+	}
+	else
+	{
+		App->fonts->BlitText(760, 168, scoreFont, "x");
+	}
+	App->fonts->BlitText(665, 168, scoreFont, comboText);
 
-	//FPS PRITER
-	sprintf_s(FPStext, 10, "%2d", App->FPS);
-	App->fonts->BlitText(16, 16, scoreFont, FPStext);
-	App->fonts->BlitText(56, 16, scoreFont, "FPS");
-  
+	if (App->physics->debug)
+	{
+		//FPS PRITER
+		sprintf_s(FPStext, 10, "%7d", App->FPS);
+		App->fonts->BlitText(-76, 16, scoreFont, FPStext);
+		App->fonts->BlitText(56, 16, scoreFont, "FPS");
+
+		//gravity printer
+		sprintf_s(GRAVITYtext, 10, "%7d", (int)App->physics->GRAVITY_Y * -1);
+		App->fonts->BlitText(665, 8 + 20 * 9, scoreFont, "gravity");
+		App->fonts->BlitText(665, 8 + 20 * 10, scoreFont, GRAVITYtext);
+
+		//boing force printer
+		sprintf_s(BOINGFORCEtext, 10, "%7d", (int)boingForce * 10);
+		App->fonts->BlitText(685, 8 + 20 * 11, scoreFont, "bounce");
+		App->fonts->BlitText(665, 8 + 20 * 12, scoreFont, BOINGFORCEtext);
+	}
+
+
+	
+
+
 	//CURSOR
 	SDL_ShowCursor(false);
 	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
+
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN || die)
+	{
+		if (!die)
+		{
+			life = 3;
+			combo = 0;
+			score = 0;
+		}
+		Ball->SetPosition(546, 563);
+		Ball->body->SetLinearVelocity(b2Vec2(0, 0));
+		ball_anim.Reset();
+		ball_state = DEAD;
+		sensorstart = false;
+		die = false;
+
+		//Debug balls clear
+		p2List_item<PhysBody*>* circleItem;
+		circleItem = circles.start;
+
+		while (circleItem != NULL)
+		{
+			circleItem->data->body->DestroyFixture(circleItem->data->body->GetFixtureList());
+			RELEASE(circleItem->data);
+			circleItem = circleItem->next;
+		}
+		circles.clear();
+
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -553,8 +681,8 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			}
 			score += combo * 100;
 			vec = bodyA->body->GetPosition() - bodyB->body->GetPosition();
-			vec = b2Vec2(	(bodyA->body->GetPosition().x - bodyB->body->GetPosition().x) * 4,
-							(bodyA->body->GetPosition().y - bodyB->body->GetPosition().y) * 4);
+			vec = b2Vec2(	(bodyA->body->GetPosition().x - bodyB->body->GetPosition().x) * boingForce,
+							(bodyA->body->GetPosition().y - bodyB->body->GetPosition().y) * boingForce);
 			//BIGGER THE BOINGER, BIGGER THE BOING
 			bodyA->body->ApplyLinearImpulse(vec, bodyA->body->GetPosition(), true);
 
@@ -563,7 +691,18 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		case ColliderType::DEATH:
 			die = true;
 			bodyA->body->SetLinearVelocity(b2Vec2(0, 0));
-			App->audio->PlayFx(damage_fx);
+			
+
+			life--;
+			if (life <= 0)
+			{
+				isDead = true;
+				App->audio->PlayFx(death_fx);
+			}
+			else
+			{
+				App->audio->PlayFx(damage_fx);
+			}
 
 			lastCollider = ColliderType::DEATH;
 			break;

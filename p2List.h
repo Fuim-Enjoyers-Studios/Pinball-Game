@@ -32,11 +32,13 @@ class p2List
 
 private:
 
-	p2List_item<tdata>*   start;
-	p2List_item<tdata>*   end;
+	
 	unsigned int  size;
 
 public:
+
+	p2List_item<tdata>* start;
+	p2List_item<tdata>* end;
 
 	/**
 	* Constructor

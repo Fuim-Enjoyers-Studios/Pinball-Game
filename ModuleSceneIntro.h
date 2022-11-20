@@ -12,6 +12,13 @@ class PhysBody;
 class b2RevoluteJoint;
 enum class ColliderType;
 
+enum class DEBUGKEYSTATE
+{
+	FPS,
+	GRAVITY,
+	BOINGFORCE
+};
+
 class SceneElement
 {
 public:
@@ -76,6 +83,10 @@ public:
 	int scoreFont = -1;
 	int x, y;
 
+	DEBUGKEYSTATE DebugKeyState = DEBUGKEYSTATE::GRAVITY;
+
+
+
 	SDL_Texture* ball;
 	SDL_Texture* background;
 	SDL_Texture* scoreBoard;
@@ -86,6 +97,7 @@ public:
 	SDL_Texture* cursorTexture = nullptr;
 	SDL_Texture* rightFlipperTexture = nullptr;
 	SDL_Texture* leftFlipperTexture = nullptr;
+	SDL_Texture* explosion;
 
 	int flipperx, flippery;
 	int flipper2x, flipper2y;
@@ -96,11 +108,17 @@ public:
 	char scoreText[10] = { "\0" };
 	char highScoreText[10] = { "\0" };
 	char lastScoreText[10] = { "\0" };
+	char comboText[10] = { "\0" };
+	int life;
+	bool isDead = false;
 
 	//FPS STUFF TO BLIT
-	char FPStext[3] = { "\0" };
+	char FPStext[10] = { "\0" };
 
-	bool printLayouts = false;
+	char GRAVITYtext[10] = { "\0" };
+	char BOINGFORCEtext[10] = { "\0" };
+
+	bool printLayouts = true;
 
 	Animation background_anim;
 	Animation trigger_anim;
@@ -118,9 +136,14 @@ public:
 	uint charge_fx;
 	uint launch_fx;
 	uint damage_fx;
+	uint death_fx;
 	p2Point<int> ray;
 	bool ray_on;
 	float desiredvel;
+
+
+	float boingForce = 4.0f;
+
 
 	int forcetimer;
 

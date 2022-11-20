@@ -275,8 +275,8 @@ update_status ModuleSceneIntro::Update()
 	{
 		return update_status::UPDATE_STOP;
 	}
-	
-	
+
+
 	if (!sensorstart)
 	{
 		startBloquer->SetPosition(527, 187);
@@ -290,6 +290,26 @@ update_status ModuleSceneIntro::Update()
 	{
 		App->fade->FadeToBlack(this, (Module*)App->menu, 60);
 	}
+
+
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_STATE::KEY_REPEAT)
+	{
+-		App->FPS--;
+		if (App->FPS <= 1)
+		{
+			App->FPS = 1;
+		}
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_STATE::KEY_REPEAT)
+	{
+		App->FPS++;
+		if (App->FPS >= 99)
+		{
+			App->FPS = 99;
+		}
+	}
+
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
@@ -448,6 +468,11 @@ update_status ModuleSceneIntro::Update()
 	App->fonts->BlitText(625, 108, scoreFont, "lastscore");
 	App->fonts->BlitText(665, 128, scoreFont, lastScoreText);
 
+
+	//FPS PRITER
+	sprintf_s(FPStext, 10, "%2d", App->FPS);
+	App->fonts->BlitText(16, 16, scoreFont, FPStext);
+	App->fonts->BlitText(56, 16, scoreFont, "FPS");
   
 	//CURSOR
 	SDL_ShowCursor(false);

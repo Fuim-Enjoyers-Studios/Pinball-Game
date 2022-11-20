@@ -45,6 +45,7 @@ update_status ModulePhysics::PreUpdate()
 {
 	if (!pause)
 	{
+		world->SetGravity(b2Vec2(GRAVITY_X, -GRAVITY_Y));
 		world->Step(1.0f / 60.0f, 6, 2);
 
 		for (b2Contact* c = world->GetContactList(); c; c = c->GetNext())

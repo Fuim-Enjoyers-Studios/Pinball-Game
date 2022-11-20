@@ -17,9 +17,12 @@ A 2D Pinball to test our knowledge in Box2D we created a pinball game, emulating
 - Space - The spring to launch the ball
 - Escape - Ingame to return to menu screen
 - F1 - Draw all colliders and ability to move the ball with your mouse
+- F2 - FPS toggle so it can be edited (F1 must be activated)
+- F3 - GRAVITY COEFFICIENT toggle so it can be edited (F1 must be activated)
+- F4 - BOUNCE COEFFICIENT toggle so it can be edited (F1 must be activated)
 - Tab - Draw or hide layout
-- + - Increase FPS
-- - - Reduce FPS
+- Up Arrow - Increase FPS
+- Down Arrow - Reduce FPS
 - P - Pause Game
 - R - Restart 
 

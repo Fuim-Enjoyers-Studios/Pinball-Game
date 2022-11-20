@@ -301,22 +301,77 @@ update_status ModuleSceneIntro::Update()
 	}
 
 
-
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_STATE::KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_F2))
 	{
--		App->FPS--;
-		if (App->FPS <= 1)
-		{
-			App->FPS = 1;
-		}
+		DebugKeyState = DEBUGKEYSTATE::FPS;
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_STATE::KEY_REPEAT)
+	else if (App->input->GetKey(SDL_SCANCODE_F3))
 	{
-		App->FPS++;
-		if (App->FPS >= 99)
+		DebugKeyState = DEBUGKEYSTATE::GRAVITY;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_F4))
+	{
+		DebugKeyState = DEBUGKEYSTATE::BOINGFORCE;
+	}
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_STATE::KEY_REPEAT && App->physics->debug)
+	{
+		switch (DebugKeyState)
 		{
-			App->FPS = 99;
+		case DEBUGKEYSTATE::FPS:
+			App->FPS--;
+			if (App->FPS <= 1)
+			{
+				App->FPS = 1;
+			}
+			break;
+		case DEBUGKEYSTATE::GRAVITY:
+			App->physics->GRAVITY_Y++;
+			if (App->physics->GRAVITY_Y >= 0.0f)
+			{
+				App->physics->GRAVITY_Y = 0.0f;
+			}
+			break;
+		case DEBUGKEYSTATE::BOINGFORCE:
+			boingForce -= 0.2;
+			if (boingForce <= 0.2f)
+			{
+				boingForce = 0.2f;
+			}
+			break;
+		default:
+			break;
 		}
+
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_STATE::KEY_REPEAT && App->physics->debug)
+	{
+		switch (DebugKeyState)
+		{
+		case DEBUGKEYSTATE::FPS:
+			App->FPS++;
+			if (App->FPS >= 99)
+			{
+				App->FPS = 99;
+			}
+			break;
+		case DEBUGKEYSTATE::GRAVITY:
+			App->physics->GRAVITY_Y--;
+			if (App->physics->GRAVITY_Y <= -100.0f)
+			{
+				App->physics->GRAVITY_Y = -100.0f;
+			}
+			break;
+		case DEBUGKEYSTATE::BOINGFORCE:
+			boingForce += 0.2;
+			if (boingForce >= 12.0f)
+			{
+				boingForce = 12.0f;
+			}
+			break;
+		default:
+			break;
+		}
+
 	}
 
 
@@ -496,10 +551,21 @@ update_status ModuleSceneIntro::Update()
 
 
 	//FPS PRITER
-	sprintf_s(FPStext, 10, "%2d", App->FPS);
+	sprintf_s(FPStext, 10, "%3d", App->FPS);
 	App->fonts->BlitText(16, 16, scoreFont, FPStext);
 	App->fonts->BlitText(56, 16, scoreFont, "FPS");
-  
+
+	//gravity printer
+	sprintf_s(GRAVITYtext, 10, "%7d", (int)App->physics->GRAVITY_Y * - 1);
+	App->fonts->BlitText(625, 8 + 20 * 9, scoreFont, "gravity");
+	App->fonts->BlitText(625, 8 + 20 * 10, scoreFont, GRAVITYtext);
+
+	//boing force printer
+	sprintf_s(BOINGFORCEtext, 10, "%7d", (int)boingForce * 10);
+	App->fonts->BlitText(625, 8 + 20 * 11, scoreFont, "bounce");
+	App->fonts->BlitText(625, 8 + 20 * 12, scoreFont, BOINGFORCEtext);
+
+
 	//CURSOR
 	SDL_ShowCursor(false);
 	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
@@ -535,8 +601,8 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			}
 			score += combo * 100;
 			vec = bodyA->body->GetPosition() - bodyB->body->GetPosition();
-			vec = b2Vec2(	(bodyA->body->GetPosition().x - bodyB->body->GetPosition().x) * 4,
-							(bodyA->body->GetPosition().y - bodyB->body->GetPosition().y) * 4);
+			vec = b2Vec2(	(bodyA->body->GetPosition().x - bodyB->body->GetPosition().x) * boingForce,
+							(bodyA->body->GetPosition().y - bodyB->body->GetPosition().y) * boingForce);
 			//BIGGER THE BOINGER, BIGGER THE BOING
 			bodyA->body->ApplyLinearImpulse(vec, bodyA->body->GetPosition(), true);
 

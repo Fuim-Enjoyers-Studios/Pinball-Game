@@ -77,6 +77,7 @@ bool ModuleSceneIntro::Start()
 	leftFlipperTexture = App->textures->Load("Assets/Textures/star_destroyer_left.png");
 	enemys = App->textures->Load("Assets/Textures/enemys.png");
 	explosion = App->textures->Load("Assets/Textures/explosion.png");
+	mini_explosion = App->textures->Load("Assets/Textures/mini_explosion.png");
 
 	bonus_fx = App->audio->LoadFx("Assets/Audio/bonus.wav");
 	boing_fx = App->audio->LoadFx("Assets/Audio/planet_collision1.wav");
@@ -573,6 +574,11 @@ update_status ModuleSceneIntro::Update()
 	flipper2->GetPosition(flipper2x, flipper2y);
 	App->renderer->Blit(leftFlipperTexture, flipper2x, flipper2y, (SDL_Rect*)0, 1.0f, flipper2->GetRotation(), 40, 2);
 
+	if (lastCollider == ColliderType::ENEMY && !enemy_active)
+	{
+		App->renderer->Blit(mini_explosion, (METERS_TO_PIXELS(enemy->body->GetPosition().x)) - enemy->width, METERS_TO_PIXELS(enemy->body->GetPosition().y) - enemy->height);
+	}
+
 
 	//ESCRIBE EL TESTO EN PANTALLA
 	sprintf_s(scoreText,10, "%7d", score);
@@ -730,11 +736,18 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 			lastCollider = ColliderType::SENSORSTART;
 			break;
 		case ColliderType::ENEMY:
-			enemy_active = false;
-			enemy_counter = 120;
-			score *= combo;
-			App->audio->PlayFx(hit_fx);
-			App->audio->PlayFx(damage_fx);
+			if ((sensorstart) && (enemy_active))
+			{
+				enemy_active = false;
+				enemy_counter = 120;
+				score *= combo;
+				App->audio->PlayFx(hit_fx);
+				App->audio->PlayFx(damage_fx);
+				enemy->body->SetLinearVelocity(b2Vec2(0, 0));
+			}
+			
+
+			lastCollider = ColliderType::ENEMY;
 			break;
 		}
 	}

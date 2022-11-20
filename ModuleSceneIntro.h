@@ -98,6 +98,7 @@ public:
 	SDL_Texture* rightFlipperTexture = nullptr;
 	SDL_Texture* leftFlipperTexture = nullptr;
 	SDL_Texture* explosion;
+	SDL_Texture* mini_explosion;
 
 	int flipperx, flippery;
 	int flipper2x, flipper2y;

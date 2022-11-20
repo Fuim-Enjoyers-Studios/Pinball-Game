@@ -22,11 +22,11 @@ Application::Application()
 	input = new ModuleInput(this);
 	audio = new ModuleAudio(this, true);
 	player = new ModulePlayer(this);
-	scene_intro = new ModuleSceneIntro(this, true);
+	scene_intro = new ModuleSceneIntro(this, false);
 	physics = new ModulePhysics(this);
 	fonts = new ModuleFonts(this);
 	fade = new ModuleFadeToBlack(this);
-	menu = new SceneMenu(this, false);
+	menu = new SceneMenu(this, true);
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order

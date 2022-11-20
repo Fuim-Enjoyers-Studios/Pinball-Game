@@ -549,10 +549,15 @@ update_status ModuleSceneIntro::Update()
 	App->fonts->BlitText(625, 108, scoreFont, "lastscore");
 	App->fonts->BlitText(665, 128, scoreFont, lastScoreText);
 
+	sprintf_s(comboText, 10, "%7d", combo);
+	App->fonts->BlitText(700, 148, scoreFont, "combo");
+	App->fonts->BlitText(760, 168, scoreFont, "x");
+	App->fonts->BlitText(665, 168, scoreFont, comboText);
+
 
 	//FPS PRITER
-	sprintf_s(FPStext, 10, "%3d", App->FPS);
-	App->fonts->BlitText(16, 16, scoreFont, FPStext);
+	sprintf_s(FPStext, 10, "%7d", App->FPS);
+	App->fonts->BlitText(-76, 16, scoreFont, FPStext);
 	App->fonts->BlitText(56, 16, scoreFont, "FPS");
 
 	//gravity printer

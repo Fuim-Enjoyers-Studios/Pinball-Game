@@ -105,6 +105,7 @@ public:
 	char scoreText[10] = { "\0" };
 	char highScoreText[10] = { "\0" };
 	char lastScoreText[10] = { "\0" };
+	char comboText[10] = { "\0" };
 	int life;
 	bool isDead = false;
 

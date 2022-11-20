@@ -115,7 +115,7 @@ public:
 	char GRAVITYtext[10] = { "\0" };
 	char BOINGFORCEtext[10] = { "\0" };
 
-	bool printLayouts = false;
+	bool printLayouts = true;
 
 	Animation background_anim;
 	Animation trigger_anim;

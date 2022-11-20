@@ -8,6 +8,7 @@
 #include "ModulePhysics.h"
 #include "ModuleFonts.h"
 #include "ModuleFadeToBlack.h"
+#include "p2List.h"
 
 
 
@@ -198,12 +199,13 @@ bool ModuleSceneIntro::Start()
 	//FLIPPERS
 	if (joint == nullptr) {
 		flipper = App->physics->CreateRectangle(320, 583, 84, 15);
-		staticPin = App->physics->CreateRectangle(355, 581, 2, 2);
+		staticPin = App->physics->CreateRectangle(355, 590, 1, 1);
 		flipper->body->SetType(b2BodyType::b2_dynamicBody);
 		staticPin->body->SetType(b2BodyType::b2_staticBody);
 		flipper->ctype = ColliderType::WALL;
+		staticPin->ctype = ColliderType::WALL;
 
-		joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 578);
+		joint = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper, staticPin, 355, 590);
 	}
 
 	joint->SetLimits(-50 * DEGTORAD, 15 * DEGTORAD);
@@ -213,12 +215,13 @@ bool ModuleSceneIntro::Start()
 
 	if (joint2 == nullptr) { 
 		flipper2 = App->physics->CreateRectangle(186, 583, 84, 15);
-		staticPin2 = App->physics->CreateRectangle(150, 578, 2, 2);
+		staticPin2 = App->physics->CreateRectangle(150, 590, 1, 1);
 		flipper2->body->SetType(b2BodyType::b2_dynamicBody);
 		staticPin2->body->SetType(b2BodyType::b2_staticBody);
 		flipper2->ctype = ColliderType::WALL;
+		staticPin2->ctype = ColliderType::WALL;
 
-		joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 578);
+		joint2 = (b2RevoluteJoint*)App->physics->CreateRevoluteJoint(flipper2, staticPin2, 150, 590);
 	}
 
 	joint2->SetLimits(-15 * DEGTORAD, 50 * DEGTORAD);
@@ -313,7 +316,7 @@ update_status ModuleSceneIntro::Update()
 	{
 		DebugKeyState = DEBUGKEYSTATE::BOINGFORCE;
 	}
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_STATE::KEY_REPEAT && App->physics->debug)
+	if (App->input->GetKey(SDL_SCANCODE_KP_MINUS) == KEY_STATE::KEY_REPEAT && App->physics->debug)
 	{
 		switch (DebugKeyState)
 		{
@@ -343,7 +346,7 @@ update_status ModuleSceneIntro::Update()
 		}
 
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_STATE::KEY_REPEAT && App->physics->debug)
+	else if (App->input->GetKey(SDL_SCANCODE_KP_PLUS) == KEY_STATE::KEY_REPEAT && App->physics->debug)
 	{
 		switch (DebugKeyState)
 		{
@@ -406,7 +409,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(collision_layout, 0, 0);
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_REPEAT && sensorstart == false)
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT && sensorstart == false)
 	{
 		if (ball_state == DEAD) { ball_anim.SetCurrentFrame(triggerAnimCounter + 1); }
 		if (triggerCounter == 40) {
@@ -429,7 +432,7 @@ update_status ModuleSceneIntro::Update()
 
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_UP) {
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_UP) {
 		b2Vec2 BallInitVelocity = b2Vec2(0.0f, desiredvel);
 		Ball->GetPosition(x, y);
 	
@@ -449,9 +452,10 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12));
-		circles.getLast()->data->listener = this;
-		circles.getLast()->data->ctype = ColliderType::BALL;
+		PhysBody* c1 = App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12);
+		c1->listener = this;
+		c1->ctype = ColliderType::BALL;
+		circles.add(c1);
 	}
 
 	// Prepare for raycast ------------------------------------------------------
@@ -514,16 +518,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(scoreBoard, 0, 0);
 	}
   
-	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN || die)
-	{
-		Ball->SetPosition(546, 563);
-		Ball->body->SetLinearVelocity(b2Vec2(0,0));
-		circles.clear();
-		ball_anim.Reset();
-		ball_state = DEAD;
-		sensorstart = false;
-		die = false;
-	}
+	
 	
 	//illo, aqui imprime el flipper right
 
@@ -533,7 +528,7 @@ update_status ModuleSceneIntro::Update()
 	//illo, aqui imprime el flipper le
 
 	flipper2->GetPosition(flipper2x, flipper2y);
-	App->renderer->Blit(leftFlipperTexture, flipper2x, flipper2y, (SDL_Rect*)0, 1.0f, flipper2->GetRotation(), 45, 2);
+	App->renderer->Blit(leftFlipperTexture, flipper2x, flipper2y, (SDL_Rect*)0, 1.0f, flipper2->GetRotation(), 40, 2);
 
 
 	//ESCRIBE EL TESTO EN PANTALLA
@@ -554,26 +549,60 @@ update_status ModuleSceneIntro::Update()
 	App->fonts->BlitText(760, 168, scoreFont, "x");
 	App->fonts->BlitText(665, 168, scoreFont, comboText);
 
+	if (App->physics->debug)
+	{
+		//FPS PRITER
+		sprintf_s(FPStext, 10, "%7d", App->FPS);
+		App->fonts->BlitText(-76, 16, scoreFont, FPStext);
+		App->fonts->BlitText(56, 16, scoreFont, "FPS");
 
-	//FPS PRITER
-	sprintf_s(FPStext, 10, "%7d", App->FPS);
-	App->fonts->BlitText(-76, 16, scoreFont, FPStext);
-	App->fonts->BlitText(56, 16, scoreFont, "FPS");
+		//gravity printer
+		sprintf_s(GRAVITYtext, 10, "%7d", (int)App->physics->GRAVITY_Y * -1);
+		App->fonts->BlitText(665, 8 + 20 * 9, scoreFont, "gravity");
+		App->fonts->BlitText(665, 8 + 20 * 10, scoreFont, GRAVITYtext);
 
-	//gravity printer
-	sprintf_s(GRAVITYtext, 10, "%7d", (int)App->physics->GRAVITY_Y * - 1);
-	App->fonts->BlitText(625, 8 + 20 * 9, scoreFont, "gravity");
-	App->fonts->BlitText(625, 8 + 20 * 10, scoreFont, GRAVITYtext);
+		//boing force printer
+		sprintf_s(BOINGFORCEtext, 10, "%7d", (int)boingForce * 10);
+		App->fonts->BlitText(685, 8 + 20 * 11, scoreFont, "bounce");
+		App->fonts->BlitText(665, 8 + 20 * 12, scoreFont, BOINGFORCEtext);
+	}
 
-	//boing force printer
-	sprintf_s(BOINGFORCEtext, 10, "%7d", (int)boingForce * 10);
-	App->fonts->BlitText(625, 8 + 20 * 11, scoreFont, "bounce");
-	App->fonts->BlitText(625, 8 + 20 * 12, scoreFont, BOINGFORCEtext);
+
+	
 
 
 	//CURSOR
 	SDL_ShowCursor(false);
 	App->renderer->Blit(cursorTexture, App->input->GetMouseX(), App->input->GetMouseY());
+
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN || die)
+	{
+		if (!die)
+		{
+			life = 3;
+			combo = 0;
+			score = 0;
+		}
+		Ball->SetPosition(546, 563);
+		Ball->body->SetLinearVelocity(b2Vec2(0, 0));
+		ball_anim.Reset();
+		ball_state = DEAD;
+		sensorstart = false;
+		die = false;
+
+		//Debug balls clear
+		p2List_item<PhysBody*>* circleItem;
+		circleItem = circles.start;
+
+		while (circleItem != NULL)
+		{
+			circleItem->data->body->DestroyFixture(circleItem->data->body->GetFixtureList());
+			RELEASE(circleItem->data);
+			circleItem = circleItem->next;
+		}
+		circles.clear();
+
+	}
 
 	return UPDATE_CONTINUE;
 }

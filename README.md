@@ -23,7 +23,6 @@ We had a lot of issues like those, but the ones we wrote here are the ones that 
 
 - Left Arrow - Left flipper
 - Right Arrow - Right flipper
-- Space - The spring to launch the ball
 - Escape - Ingame to return to menu screen
 - 1 - Create debug circles
 - Q - Inside the game to close the game

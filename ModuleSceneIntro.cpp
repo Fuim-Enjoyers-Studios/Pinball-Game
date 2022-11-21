@@ -217,6 +217,8 @@ bool ModuleSceneIntro::Start()
 		enemy = App->physics->CreateRectangleSensor(-100, 420, 60, 30);
 		enemy->body->SetType(b2BodyType::b2_kinematicBody);
 	}
+	enemy->body->SetAwake(true);
+	enemy->body->SetActive(true);
 
 	//FLIPPERS
 	if (joint == nullptr) {
@@ -259,6 +261,9 @@ bool ModuleSceneIntro::Start()
 
 	life = 3;
 	isDead = false;
+
+	int enemy_counter = 20;
+	bool enemy_active = false;
 
 	App->audio->PlayMusic("Assets/Audio/Star_Wars_Theme.ogg");
 

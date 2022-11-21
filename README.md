@@ -25,7 +25,8 @@ We had a lot of issues like those, but the ones we wrote here are the ones that 
 - Right Arrow - Right flipper
 - Space - The spring to launch the ball
 - Escape - Ingame to return to menu screen
-- 1 - Write 
+- 1 - Create debug circles
+- Q - Inside the game to close the game
 - F1 - Draw all colliders and ability to move the ball with your mouse
 - F2 - FPS toggle so it can be edited (F1 must be activated)
 - F3 - GRAVITY COEFFICIENT toggle so it can be edited (F1 must be activated)
